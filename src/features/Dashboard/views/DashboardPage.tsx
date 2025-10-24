@@ -1,6 +1,6 @@
 
 import React from 'react';
-import type { FC } from 'react'; // Importamos el tipo FunctionComponent
+import type { FC } from 'react';
 import styles from './DashboardPage.module.css';
 
 
@@ -9,7 +9,7 @@ interface Appointment {
     time: string;
     patientName: string;
     doctorName: string;
-    status: 'Confirmado' | 'Pendiente'; // Usamos tipos literales para más seguridad
+    status: 'Confirmado' | 'Pendiente'; 
 }
 
 interface Stats {
@@ -18,7 +18,7 @@ interface Stats {
 }
 
 
-// --- Iconos SVG (sin cambios, son componentes funcionales) ---
+
 const CalendarIcon: FC = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2v4" /><path d="M16 2v4" /><rect width="18" height="18" x="3" y="4" rx="2" /><path d="M3 10h18" /></svg>
 );
@@ -34,7 +34,8 @@ const ClockIcon: FC = () => (
 
 // --- Componente Principal del Dashboard ---
 const DashboardPage: FC = () => {
-    // Datos de ejemplo, ahora tipados con nuestras interfaces
+
+    //Datos de ejemplo
     const upcomingAppointments: Appointment[] = [
         { time: '09:00 AM', patientName: 'Ana García', doctorName: 'Dr. Carlos Ruiz', status: 'Confirmado' },
         { time: '10:30 AM', patientName: 'Luis Martínez', doctorName: 'Dra. Elena Soto', status: 'Confirmado' },

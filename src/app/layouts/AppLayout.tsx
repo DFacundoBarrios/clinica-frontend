@@ -6,7 +6,7 @@ import { styled, useTheme } from "@mui/material/styles";
 import { Outlet } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import SidenavLinks from '../components/SidenavLinks.tsx';
-import LocalHospitalIcon from '@mui/icons-material/LocalHospital'; // Icono para la clínica
+import LocalHospitalIcon from '@mui/icons-material/LocalHospital'; 
 
 const DRAWER_WIDTH = 280;
 
@@ -67,12 +67,12 @@ export default function AppLayout() {
           <Box sx={{ flex: 1 }} />
 
           <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} sx={{ ml: 0.5 }}>
-            <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>S</Avatar>
+            <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>A</Avatar>
           </IconButton>
 
           <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
-            <MenuItem onClick={() => setAnchorEl(null)}>Mi Perfil</MenuItem>
-            <MenuItem onClick={() => setAnchorEl(null)}>Cerrar Sesión</MenuItem>
+            <MenuItem onClick={() => setAnchorEl(null)}>Administrador</MenuItem>
+
           </Menu>
         </Toolbar>
       </AppBar>

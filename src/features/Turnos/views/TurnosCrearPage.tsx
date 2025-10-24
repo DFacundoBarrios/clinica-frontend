@@ -1,113 +1,238 @@
 import { useState } from "react"
 import type { FormEvent, ChangeEvent } from "react"
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import type { TurnoCrearDto } from "./../types/TurnosTypes" 
-import { TurnosService } from "./../services/TurnosService"
+import { useNavigate } from 'react-router-dom';
+import {
+    TextField,
+    Button,
+    Box,
+    Stack,
+    Typography,
+    Paper,
+    CircularProgress,
+    Alert,
+
+
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
+    type SelectChangeEvent
+} from '@mui/material';
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Cancel';
+
+
+export interface TurnoCrearDto {
+    id_paciente: number;
+    id_medico: number;
+    numero_consultorio: string | number;
+    fecha: string;
+    hora: string;
+    observaciones: string;
+    estado: string; 
+}
+// ---------------------------------------------------
+
+
+const ESTADOS_TURNO = ["RESERVADO", "ATENTIDO", "CANCELADO"];
+
+
+const TurnosService = {
+    crearTurnos: async (dto: TurnoCrearDto) => {
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        console.log("Turno creado (Simulación):", dto);
+        return { success: true };
+    },
+};
 
 const estadoInicial: TurnoCrearDto = {
     id_paciente: 0,
     id_medico: 0,
-    numero_consultorio: 0,
+    numero_consultorio: '',
     fecha: '',
     hora: '',
     observaciones: '',
-    estado: ''
+    estado: ESTADOS_TURNO[0] 
 }
 
-export default function TurnosCrearDto() {
+export default function TurnosCrearPage() {
     const [form, setForm] = useState<TurnoCrearDto>(estadoInicial)
     const [cargando, setCargando] = useState<boolean>(false)
+    const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
 
-    async function handleOnSubmit (event: FormEvent) {
+    async function handleOnSubmit(event: FormEvent) {
         event.preventDefault();
+        setError(null);
+
+        // Validación básica
+        if (!form.id_paciente || !form.id_medico || !form.fecha || !form.hora || !form.estado) {
+            setError("Por favor, complete los campos obligatorios (Paciente, Médico, Fecha, Hora y Estado).");
+            return;
+        }
+
         try {
             setCargando(true)
-            const result = await TurnosService.crearTurnos(form)
-            reiniciarForm()
+            await TurnosService.crearTurnos(form)
+
+            // Redirigir y mostrar mensaje de éxito
+            navigate('/turnos', { state: { successMessage: "Turno agendado con éxito." } });
         } catch (e) {
-            console.error(e)
+            console.error("Error al crear turno:", e);
+            setError("Error de conexión o servidor al crear el turno.");
         } finally {
             setCargando(false)
         }
     }
-    function handleOnChange (event: ChangeEvent<HTMLInputElement>) {
+
+    // Manejador para TextField (texto, números)
+    function handleTextFieldChange(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
         const { name, value } = event.target;
+
+        const finalValue: string | number = (
+            name === "id_paciente" || name === "id_medico" || name === "numero_consultorio"
+        ) ? (value === "" ? 0 : Number(value)) : value;
+
         setForm(prevFormData => ({
             ...prevFormData,
-            [name]: name === "stock" || name === "precio" ? Number(value) : value
+            [name]: finalValue
         }));
     }
-    function handleClickReiniciar () {
-        reiniciarForm()
+
+    // Manejador específico para Select
+    function handleSelectChange(event: SelectChangeEvent<string>) {
+        const { name, value } = event.target;
+
+        setForm(prevFormData => ({
+            ...prevFormData,
+            [name]: value
+        }));
     }
-    function reiniciarForm () {
-        setForm(estadoInicial)
+
+    function handleClickCancelar() {
+        navigate('/turnos');
     }
+
     return (
-        <div>
-            <div>
-                <h1>Formulario para crear Turnos</h1>
-            </div>
+        <Box sx={{ p: 3, display: 'flex', justifyContent: 'center' }}>
+            <Paper elevation={6} sx={{ p: 4, width: '100%', maxWidth: 500 }}>
 
-            <form autoComplete="off" noValidate onSubmit={handleOnSubmit}>
-                <div>
-                    <TextField
-                    required
-                    value={form.id_paciente}
-                    type="number"
-                    name="id_paciente"
-                    onChange={handleOnChange}
-                    label="Numero ID de Paciente"/>
+                <Typography variant="h4" component="h1" color="primary" sx={{ fontWeight: 'bold', mb: 3 }}>
+                    Agendar Nuevo Turno 📅
+                </Typography>
 
-                    <TextField
-                    required
-                    value={form.id_medico}
-                    type="number"
-                    name="id_medico"
-                    onChange={handleOnChange}
-                    label="Numero ID de Medico"/>
+                {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-                    <TextField
-                    required
-                    value={form.numero_consultorio}
-                    type="number"
-                    name="numero_consultorio"
-                    onChange={handleOnChange}
-                    label="Numero de Consultorio"/>
+                <form autoComplete="off" noValidate onSubmit={handleOnSubmit}>
+                    <Stack spacing={2.5}>
 
-                    <TextField
-                    value={form.fecha}
-                    name="fecha"
-                    onChange={handleOnChange}
-                    label="Fecha"/>
+                        {/* IDs de Enlace (Paciente y Médico) */}
+                        <TextField
+                            fullWidth required
+                            value={form.id_paciente || ''}
+                            type="number"
+                            name="id_paciente"
+                            onChange={handleTextFieldChange} 
+                            label="ID de Paciente"
+                            variant="outlined"
+                        />
+                        <TextField
+                            fullWidth required
+                            value={form.id_medico || ''}
+                            type="number"
+                            name="id_medico"
+                            onChange={handleTextFieldChange} 
+                            label="ID de Médico"
+                            variant="outlined"
+                        />
 
-                    <TextField
-                    value={form.hora}
-                    name="hora"
-                    onChange={handleOnChange}
-                    label="Hora"/>
+                        {/* Consultorio */}
+                        <TextField
+                            fullWidth required
+                            value={form.numero_consultorio || ''}
+                            name="numero_consultorio"
+                            onChange={handleTextFieldChange} 
+                            label="Número de Consultorio"
+                            variant="outlined"
+                        />
 
-                    <TextField
-                    value={form.observaciones}
-                    name="observaciones"
-                    onChange={handleOnChange}
-                    label="Observaciones"/>
+                        {/* Fecha y Hora */}
+                        <TextField
+                            fullWidth required
+                            value={form.fecha}
+                            name="fecha"
+                            onChange={handleTextFieldChange}
+                            label="Fecha del Turno"
+                            type="date"
+                            variant="outlined"
+                            InputLabelProps={{ shrink: true }}
+                        />
+                        <TextField
+                            fullWidth required
+                            value={form.hora}
+                            name="hora"
+                            onChange={handleTextFieldChange}
+                            label="Hora del Turno"
+                            type="time"
+                            variant="outlined"
+                            InputLabelProps={{ shrink: true }}
+                        />
 
-                    <TextField
-                    required
-                    value={form.estado}
-                    name="estado"
-                    onChange={handleOnChange}
-                    label="estado"/>
+                        // ESTADO - REEMPLAZADO POR SELECT
+                        <FormControl fullWidth required>
+                            <InputLabel id="estado-select-label">Estado</InputLabel>
+                            <Select
+                                labelId="estado-select-label"
+                                id="estado-select"
+                                value={form.estado}
+                                name="estado"
+                                label="Estado"
+                                onChange={handleSelectChange} 
+                            >
+                                {/* Mapear las opciones de estado */}
+                                {ESTADOS_TURNO.map((estado) => (
+                                    <MenuItem key={estado} value={estado}>
+                                        {estado}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
 
-                    <div>
-                        <Button variant="contained" type="submit">Enviar</Button>
-                        <Button variant="outlined" onClick={handleClickReiniciar}>Cancelar</Button>
-                    </div>
-                </div>
-            </form>
+                        {/* Observaciones */}
+                        <TextField
+                            fullWidth
+                            value={form.observaciones}
+                            name="observaciones"
+                            onChange={handleTextFieldChange}
+                            label="Observaciones"
+                            variant="outlined"
+                            multiline
+                            rows={3}
+                        />
 
-        </div>
+                        {/* Botones de Acción */}
+                        <Box sx={{ pt: 1, display: 'flex', justifyContent: 'flex-start', gap: 2 }}>
+                            <Button
+                                variant="contained"
+                                type="submit"
+                                color="primary"
+                                startIcon={cargando ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
+                                disabled={cargando}
+                            >
+                                {cargando ? 'Agendando...' : 'Guardar Turno'}
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                onClick={handleClickCancelar}
+                                startIcon={<CancelIcon />}
+                                disabled={cargando}
+                            >
+                                Cancelar
+                            </Button>
+                        </Box>
+                    </Stack>
+                </form>
+            </Paper>
+        </Box>
     )
 }

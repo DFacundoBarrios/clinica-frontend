@@ -37,16 +37,14 @@ interface SidenavLinksProps {
   handleClick: () => void;
 }
 
-/*
-* Enlaces principales para el Gestor de Turnos.
-*/
+
 export default function SidenavLinks(props: SidenavLinksProps) {
   return (
     <>
-      <SidenavLink to="/" icon={<DashboardOutlinedIcon />} label="HOME" onClick={props.handleClick} />
-      <SidenavLink to="/turnos" icon={<CalendarMonthOutlinedIcon />} label="ABM TURNOS" onClick={props.handleClick} />
-      <SidenavLink to="/pacientes" icon={<PeopleAltOutlinedIcon />} label="ABM PACIENTES" onClick={props.handleClick} />
-      <SidenavLink to="/medicos" icon={<MedicalServicesOutlinedIcon />} label="ABM MEDICOS" onClick={props.handleClick} />
+      <SidenavLink to="/" icon={<DashboardOutlinedIcon />} label="Inicio" onClick={props.handleClick} />
+      <SidenavLink to="/turnos" icon={<CalendarMonthOutlinedIcon />} label="Agenda Turnos" onClick={props.handleClick} />
+      <SidenavLink to="/pacientes" icon={<PeopleAltOutlinedIcon />} label="Pacientes" onClick={props.handleClick} />
+      <SidenavLink to="/medicos" icon={<MedicalServicesOutlinedIcon />} label="Medicos" onClick={props.handleClick} />
     </>
   )
 }

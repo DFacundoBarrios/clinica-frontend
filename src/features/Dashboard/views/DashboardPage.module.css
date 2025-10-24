@@ -1,0 +1,210 @@
+
+:root {
+    --primary-color: #040303; /* Azul */
+    --primary-hover: #10192b;
+    --secondary-color: #000000; /* Verde */
+    --warning-color: #dc1010; /* Amarillo */
+    --bg-light: #2664c8; /* Fondo principal */
+    --card-bg: #2121219e;
+    --text-dark: #fdfdfd;
+    --text-light: #ffffff;
+    --border-color: #0b0101;
+    --border-radius: 8px;
+    --box-shadow: 0 4px 6px -1px rgba(8, 8, 8, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Contenedor Principal --- */
+/* DashboardPage.module.css */
+
+.dashboardContainer {
+    background-color: var(--bg-light);
+    min-height: 100vh;
+    padding: 2rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+}
+
+/* --- Encabezado --- */
+.header {
+    margin-bottom: 2rem;
+}
+
+.headerTitle {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.headerSubtitle {
+    font-size: 1rem;
+    color: var(--text-light);
+    margin-top: 0.25rem;
+}
+
+/* --- Grid de Estadísticas --- */
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.statCard {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--box-shadow);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.statCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(123, 68, 68, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+
+.iconWrapper {
+    padding: 0.75rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgb(73, 245, 82);
+}
+.iconBlue { background-color: var(--primary-color); }
+.iconGreen { background-color: var(--secondary-color); }
+
+.statValue {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.statTitle {
+    font-size: 0.875rem;
+    color: var(--text-light);
+}
+
+/* --- Grid Principal (Turnos y Acciones) --- */
+.mainGrid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+}
+
+.sectionTitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+}
+
+/* --- Lista de Turnos --- */
+.appointmentsList {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--box-shadow);
+}
+
+.appointmentItem {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+.appointmentItem:last-child {
+    border-bottom: none;
+}
+
+.appointmentTime {
+    font-weight: 600;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.appointmentDetails {
+    flex-grow: 1;
+}
+
+.patientName {
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.doctorName {
+    font-size: 0.875rem;
+    color: var(--text-light);
+}
+
+.statusBadge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.statusConfirmed {
+    background-color: #0afc7f;
+    color: #000000;
+}
+.statusPending {
+    background-color: #d8be57;
+    color: #000000;
+}
+
+/* --- Acciones Rápidas --- */
+.quickActions {
+    /* Puedes añadir un fondo si quieres, o dejarlo limpio */
+}
+
+.actionButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.actionButton:first-child {
+    background-color: var(--primary-color);
+    color: white;
+}
+.actionButton:first-child:hover {
+    background-color: var(--primary-hover);
+}
+
+.actionButtonSecondary {
+    background-color: var(--card-bg);
+    color: var(--text-dark);
+    border: 1px solid var(--border-color);
+}
+.actionButtonSecondary:hover {
+    background-color: var(--bg-light);
+}
+
+
+/* --- Responsividad para Móviles --- */
+@media (max-width: 768px) {
+    .dashboardContainer {
+        padding: 1rem;
+    }
+    .mainGrid {
+        grid-template-columns: 1fr;
+    }
+}

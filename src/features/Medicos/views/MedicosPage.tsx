@@ -1,4 +1,3 @@
-import React, { useEffect, useState, useCallback } from 'react';
 import { 
     Box, 
     Typography, 
@@ -9,57 +8,35 @@ import {
     Divider,
     Stack
 } from '@mui/material';
-
 import AccessTimeIcon from '@mui/icons-material/AccessTime'; 
 import BadgeIcon from '@mui/icons-material/Badge'; 
+import { useApi } from 'src/hooks/useApi';
+import { apiService } from 'src/services/api';
+import type { Doctor } from 'src/types';
 
-// --- 1. INTERFAZ MÉDICO ---
-export interface Medico {
-    id_medico: number;
-    nombre: string;
-    apellido: string;
-    matricula: string;
-    horario_atencion: string; 
-}
+// Función auxiliar para obtener el mensaje de error de forma segura
+const getErrorMessage = (err: unknown): string => {
+    if (!err) return 'Error desconocido.';
+    
+    // Si el error es una cadena, la devolvemos.
+    if (typeof err === 'string') {
+        return err;
+    }
+    
+    // Si es un objeto, intentamos acceder a 'message' o proporcionamos un mensaje predeterminado.
+    if (err && typeof err === 'object' && 'message' in err) {
+        return err.message as string;
+    }
 
-// --- 2. SERVICIO DE EJEMPLO ---
-const MedicosService = {
-    obtenerMedicos: async (): Promise<Medico[]> => {
-        await new Promise(resolve => setTimeout(resolve, 800));
-        return [
-            { id_medico: 101, nombre: "Dr. Esteban", apellido: "Kahn", matricula: "A1234", horario_atencion: "Lunes a Viernes, 8:00 - 16:00" },
-            { id_medico: 102, nombre: "Dra. Sofía", apellido: "Rojas", matricula: "B5678", horario_atencion: "Martes y Jueves, 10:00 - 18:00" },
-            { id_medico: 103, nombre: "Dr. Miguel", apellido: "Torres", matricula: "C9012", horario_atencion: "Lunes, Miércoles, Viernes, 14:00 - 20:00" },
-            { id_medico: 104, nombre: "Dra. Elena", apellido: "Vega", matricula: "D3456", horario_atencion: "Sábados, 9:00 - 13:00" },
-        ];
-    },
+    return 'Error al cargar los médicos.';
 };
 
 
 export default function MedicosPage() {
-    const [medicos, setMedicos] = useState<Medico[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const { data: doctors, loading: isLoading, error } = useApi<Doctor[]>(
+        apiService.getDoctors
+    );
 
-    const fetchMedicos = useCallback(async () => {
-        setIsLoading(true);
-        setError(null);
-        try {
-            const resultado = await MedicosService.obtenerMedicos();
-            setMedicos(resultado);
-        } catch (e) {
-            console.error("Error al cargar médicos:", e);
-            setError("No se pudo cargar la información de los médicos.");
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
-
-    useEffect(() => {
-        fetchMedicos();
-    }, [fetchMedicos]);
-
- 
     return (
         <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             
@@ -86,20 +63,22 @@ export default function MedicosPage() {
             {/* Error */}
             {error && (
                 <Alert severity="error" sx={{ mb: 3, width: '100%', maxWidth: 700 }}>
-                    {error}
+                    {/* 💡 CORRECCIÓN APLICADA: Usamos la función auxiliar */}
+                    {getErrorMessage(error)}
                 </Alert>
             )}
 
             {/* Lista de médicos */}
             <Stack spacing={3} sx={{ width: '100%', maxWidth: 700 }}>
-                {medicos.length === 0 && !isLoading && !error ? (
+                {!isLoading && !error && (!doctors || doctors.length === 0) ? (
                     <Alert severity="info">
                         No se encontraron médicos registrados en el sistema.
                     </Alert>
                 ) : (
-                    medicos.map((medico) => (
+                    doctors?.map((doctor) => (
                         <Card 
-                            key={medico.id_medico}
+                            // Asegúrate de usar una propiedad única que exista en Doctor (ej: id_medico, id_doctor, enrollment)
+                            key={doctor.id_doctor || doctor.enrollment} 
                             elevation={4} 
                             sx={{ 
                                 borderLeft: `5px solid #007bff`, 
@@ -110,28 +89,27 @@ export default function MedicosPage() {
                             }}
                         >
                             <CardContent>
-                                {/* Nombre del médico */}
+                                {/* Nombre y Apellido: Asumo que tu tipo Doctor usa 'name' y 'lastname' */}
                                 <Typography 
                                     variant="h5" 
                                     component="div" 
                                     sx={{ fontWeight: 600, color: 'primary.dark' }}
                                 >
-                                    {medico.nombre} {medico.apellido}
-                                    
+                                    {doctor.name} {doctor.lastname}
                                 </Typography>
                                 
                                 <Divider sx={{ my: 1.5 }} />
 
                                 {/* Detalles */}
                                 <Stack spacing={1} sx={{ mt: 1 }}>
-                                     
+                                    
                                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                         <BadgeIcon color="primary" sx={{ mr: 1, fontSize: 18 }} />
                                         <Typography variant="body1" fontWeight="bold">
                                             Matrícula:
                                         </Typography>
                                         <Typography variant="body1" sx={{ ml: 0.5 }}>
-                                            {medico.matricula}
+                                            {doctor.enrollment}
                                         </Typography>
                                     </Box>
 
@@ -142,7 +120,7 @@ export default function MedicosPage() {
                                                 Horario de Atención:
                                             </Typography>
                                             <Typography variant="body2" color="text.secondary">
-                                                {medico.horario_atencion}
+                                                {doctor.start_time}
                                             </Typography>
                                         </Stack>
                                     </Box>

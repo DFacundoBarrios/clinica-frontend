@@ -6,7 +6,7 @@ import { styled, useTheme } from "@mui/material/styles";
 import { Outlet } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import SidenavLinks from '../components/SidenavLinks.tsx';
-import LocalHospitalIcon from '@mui/icons-material/LocalHospital'; 
+import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 
 const DRAWER_WIDTH = 280;
 
@@ -60,8 +60,18 @@ export default function AppLayout() {
             </IconButton>
           )}
 
-          <Typography variant="h6" noWrap component="div">
-            GESTION DE TURNOS CLINICA
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{
+              fontWeight: 300, 
+              letterSpacing: '1.5px', 
+              textTransform: 'uppercase',
+              color: 'text.primary' 
+            }}
+          >
+            CLINICA RAFAELA
           </Typography>
 
           <Box sx={{ flex: 1 }} />
@@ -71,7 +81,7 @@ export default function AppLayout() {
           </IconButton>
 
           <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
-            <MenuItem onClick={() => setAnchorEl(null)}>Administrador</MenuItem>
+            <MenuItem onClick={() => setAnchorEl(null)}>Administradores(Ian - Facundo)</MenuItem>
 
           </Menu>
         </Toolbar>

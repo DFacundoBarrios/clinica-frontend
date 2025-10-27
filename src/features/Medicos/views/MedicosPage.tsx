@@ -9,7 +9,9 @@ import {
     Stack
 } from '@mui/material';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar';
+// 💡 Ya no necesitamos PermContactCalendarIcon si la matrícula está en el título
+// import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar';
+import LocalHospitalIcon from '@mui/icons-material/LocalHospital'; // 💡 Usaremos este para la especialidad
 import { useApi } from 'src/hooks/useApi';
 import { apiService } from 'src/services/api';
 import type { Doctor } from 'src/types';
@@ -75,61 +77,70 @@ export default function MedicosPage() {
                         No se encontraron médicos registrados en el sistema.
                     </Alert>
                 ) : (
-                    doctors?.map((doctor) => (
-                        <Card
-                            key={doctor.id_doctor || doctor.enrollment}
-                            elevation={4}
-                            sx={{
-                                borderLeft: `5px solid #007bff`,
-                                transition: '0.3s',
-                                '&:hover': {
-                                    boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
-                                }
-                            }}
-                        >
-                            <CardContent>
-                                {/* Nombre y Apellido: Asumo que tu tipo Doctor usa 'name' y 'lastname' */}
-                                <Typography
-                                    variant="h5"
-                                    component="div"
-                                    sx={{ fontWeight: 600, color: 'primary.dark' }}
-                                >
-                                    {doctor.name} {doctor.lastname}
-                                </Typography>
+                    doctors?.map((doctor) => {
+                        
+                        const especialidad = doctor.medical_specialty && doctor.medical_specialty.length > 0
+                            ? doctor.medical_specialty[0].specialty_name
+                            : 'Sin especialidad'; // Texto alternativo
 
-                                <Divider sx={{ my: 1.5 }} />
+                        return (
+                            <Card
+                                key={doctor.id_doctor || doctor.enrollment}
+                                elevation={4}
+                                sx={{
+                                    borderLeft: `5px solid #007bff`,
+                                    transition: '0.3s',
+                                    '&:hover': {
+                                        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
+                                    }
+                                }}
+                            >
+                                <CardContent>
+                                    <Typography
+                                        variant="h5"
+                                        component="div"
+                                        sx={{ fontWeight: 600, color: 'primary.dark' }}
+                                    >
+                                        {doctor.name} {doctor.lastname}
+                                    </Typography>
+                                    
+                                    <Typography
+                                        variant="subtitle1"
+                                        component="div"
+                                        color="text.secondary"
+                                        sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1.5 }}
+                                    >
+                                        <LocalHospitalIcon fontSize="small" />
+                                        {especialidad}
+                                    </Typography>
 
-                                {/* Detalles */}
-                                <Stack spacing={1} sx={{ mt: 1 }}>
 
-                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>  
-                                        <PermContactCalendarIcon color="primary" sx={{ mr: 1, fontSize: 18 }} />
+                                    <Divider sx={{ my: 1.5 }} />
 
-                                        <Typography variant="body1" fontWeight="bold">
-                                            Matrícula:
-                                        </Typography>
+                                    <Stack spacing={1} sx={{ mt: 1 }}>
 
-                                        <Typography variant="body1" sx={{ ml: 0.5 }}>
-                                            {doctor.enrollment}
-                                        </Typography>
-                                    </Box>
-
-                                    <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
-                                        <AccessTimeIcon color="success" sx={{ mr: 1, fontSize: 18, mt: 0.3 }} />
-                                        <Stack>
-                                            <Typography variant="body1" fontWeight="bold">
-                                                Horario de Atención:
+                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>  
+                                            <Typography variant="body1" color="text.secondary">
+                                                Matrícula: {doctor.enrollment}
                                             </Typography>
-                                            <Typography variant="body2" color="text.secondary">
-                                                {/* 💡 CORRECCIÓN APLICADA: Usamos .slice(0, 5) para obtener solo HH:MM */}
-                                                {doctor.start_time.slice(0, 5)} - {doctor.end_time.slice(0, 5)}
-                                            </Typography>
-                                        </Stack>
-                                    </Box>
-                                </Stack>
-                            </CardContent>
-                        </Card>
-                    ))
+                                        </Box>
+
+                                        <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
+                                            <AccessTimeIcon color="success" sx={{ mr: 1, fontSize: 18, mt: 0.3 }} />
+                                            <Stack>
+                                                <Typography variant="body1" fontWeight="bold">
+                                                    Horario de Atención:
+                                                </Typography>
+                                                <Typography variant="body2" color="text.secondary">
+                                                    {doctor.start_time.slice(0, 5)} - {doctor.end_time.slice(0, 5)}
+                                                </Typography>
+                                            </Stack>
+                                        </Box>
+                                    </Stack>
+                                </CardContent>
+                            </Card>
+                        )
+                    })
                 )}
             </Stack>
         </Box>

@@ -112,11 +112,11 @@ export default function TurnosPage() {
     const getEstadoColor = (state: string) => {
         switch (state.toLowerCase()) {
             case 'confirmado':
-            case 'reserved': // 💡 'reserved' se maneja aquí
-            case 'reservado': // 💡 'reservado' también
+            case 'reserved': 
+            case 'reservado': 
                 return 'success.main';
             case 'pendiente':
-            case 'atendido': // 💡 'atendido' podría ser otro color
+            case 'atendido': 
                 return 'warning.main';
             case 'cancelado':
                 return 'error.main';
@@ -146,7 +146,7 @@ export default function TurnosPage() {
                     startIcon={<AddIcon />} onClick={handleOpenCreate}
                     disabled={isLoadingList} 
                 >
-                    Crear Nuevo Turno
+                    NUEVO TURNO
                 </Button>
             </Box>
 

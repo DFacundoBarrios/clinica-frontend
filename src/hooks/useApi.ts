@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react'; // 💡 1. Importar useCallback
 import type { AxiosResponse, AxiosError } from 'axios';
 
 interface UseApiResult<T> {
@@ -17,7 +17,8 @@ export const useApi = <T,>(
   const [loading, setLoading] = useState<boolean>(autoLoad);
   const [error, setError] = useState<string | null>(null);
 
-  const execute = async (...params: unknown[]): Promise<T | undefined> => {
+  //callback actualizado
+  const execute = useCallback(async (...params: unknown[]): Promise<T | undefined> => {
     try {
       setLoading(true);
       setError(null);
@@ -35,13 +36,13 @@ export const useApi = <T,>(
     } finally {
       setLoading(false);
     }
-  };
+  }, [apiFunction]); 
 
   useEffect(() => {
     if (autoLoad) {
       void execute();
     }
-  }, []);
+  }, [autoLoad, execute]); 
 
   return { data, loading, error, execute, setData };
 };

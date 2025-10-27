@@ -14,14 +14,14 @@ import {
 } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
+
 import { apiService } from 'src/services/api';
 import type { Appointment, CreateAppointment, UpdateAppointment, AppointmentState } from 'src/types'; 
 
-
-// 1. Estado inicial del formulario (basado en CreateAppointment de src/types/index.ts)
+//form
 const estadoInicialForm: CreateAppointment = {
     date: '',
-    hour: '',
+    hour: '09:00', // 💡 Damos una hora por defecto
     observations: '',
     patientIdPatient: 0,
     doctorIdDoctor: 0,
@@ -49,9 +49,29 @@ export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose,
     const initialFormState = useMemo((): TurnoFormState => {
         if (turnoInicial) {
             const { date, hour, observations, state, patient, doctor, medical_office } = turnoInicial;
+
+            // 💡 CORRECCIÓN 1: LECTURA/EDICIÓN (Manejo de Zona Horaria)
+            let dateForInput = '';
+            let hourForInput = '09:00'; // Default
+            
+            if (date) {
+
+                const d = new Date(date); 
+
+                const year = d.getFullYear();
+                const month = (d.getMonth() + 1).toString().padStart(2, '0');
+                const day = d.getDate().toString().padStart(2, '0');
+                dateForInput = `${year}-${month}-${day}`; // YYYY-MM-DD
+
+                const h = d.getHours().toString().padStart(2, '0');
+                const m = d.getMinutes().toString().padStart(2, '0');
+                hourForInput = `${h}:${m}`; // HH:MM
+            }
+
+
             return {
-                date: date || '',
-                hour: hour || '',
+                date: dateForInput,      
+                hour: hourForInput,      
                 observations: observations || '',
                 state: state,
                 patientIdPatient: patient?.id_patient ?? 0,
@@ -102,14 +122,47 @@ export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose,
         setError(null);
         setIsLoading(true);
 
+        // 💡 CORRECCIÓN 2: CREACIÓN/ENVÍO (Manejo de Zona Horaria)
+        // El backend espera 'date' y 'hour' separados, pero interpreta 'date' como UTC.
+        // Vamos a enviarle en el campo 'date' un string ISO 8601 completo
+        // que él pueda parsear correctamente.
+        
+        // 1. Creamos un string "YYYY-MM-DDTHH:MM" (Ej: "2025-10-27T09:00")
+        const localDateTimeString = `${form.date}T${form.hour}`;
+
+        // 2. Creamos un objeto Date. JS lo interpretará como HORA LOCAL.
+        const localDate = new Date(localDateTimeString); // Ej: 27 Oct 2025 09:00:00 (GTM-3)
+        
+        // 3. Convertimos a string ISO 8601 (que es UTC)
+        // Ej: 27 Oct 2025 12:00:00 (UTC)
+        const dateAsISOString = localDate.toISOString(); 
+
         try {
             if (isEditing) {
                 const id = turnoInicial!.id_appointment;
-                await apiService.updateAppointment(id, form as UpdateAppointment);
+                
+                // 💡 Enviamos el DTO de actualización con la fecha ISO
+                const updatePayload: UpdateAppointment = {
+                    ...form,
+                    date: dateAsISOString,
+                    patientId: form.patientIdPatient,
+                    doctorId: form.doctorIdDoctor,
+                    medicalOfficeNumber: form.medicalOfficeNumberOffice,
+                };
+                
+                await apiService.updateAppointment(id, updatePayload);
                 onSuccess(`Turno ${id} actualizado con éxito.`);
+            
             } else {
                 const { state, ...createPayload } = form;
-                await apiService.createAppointment(createPayload as CreateAppointment);
+                
+                // 💡 Enviamos el DTO de creación con la fecha ISO
+                const finalCreatePayload: CreateAppointment = {
+                    ...createPayload,
+                    date: dateAsISOString,
+                };
+                
+                await apiService.createAppointment(finalCreatePayload);
                 onSuccess(`Turno creado con éxito.`);
             }
             onClose(); // Cierra el modal solo si fue exitoso
@@ -161,12 +214,14 @@ export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose,
                         {/* Fecha y Hora */}
                         <TextField
                             fullWidth required label="Fecha" name="date" type="date"
-                            value={form.date} onChange={handleOnChange}
+                            value={form.date} // 💡 Sigue siendo 'YYYY-MM-DD'
+                            onChange={handleOnChange}
                             variant="outlined" InputLabelProps={{ shrink: true }}
                         />
                         <TextField
                             fullWidth required label="Hora" name="hour" type="time"
-                            value={form.hour} onChange={handleOnChange}
+                            value={form.hour} // 💡 Sigue siendo 'HH:MM'
+                            onChange={handleOnChange}
                             variant="outlined" InputLabelProps={{ shrink: true }}
                         />
 

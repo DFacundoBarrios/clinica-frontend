@@ -126,7 +126,7 @@ export default function PacientesPage() {
                     onClick={handleOpenCreate}
                     disabled={isLoadingList} 
                 >
-                    Nuevo Paciente
+                   NUEVO PACIENTE
                 </Button>
             </Box>
 

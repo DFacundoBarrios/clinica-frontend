@@ -1,4 +1,4 @@
-import  { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
     Box,
@@ -19,13 +19,16 @@ import {
     Stack,
     Alert,
     CircularProgress,
+    Chip,
 } from '@mui/material';
 
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import EventBusyOutlinedIcon from '@mui/icons-material/EventBusyOutlined';
 import AddIcon from '@mui/icons-material/Add';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import VisibilityIcon from '@mui/icons-material/Visibility'; 
 
 //para el backend
 import { useApi } from 'src/hooks/useApi';
@@ -41,12 +44,20 @@ export default function TurnosPage() {
         data: turnos,
         loading: isLoadingList,
         error: errorList,
-        execute: fetchTurnos 
-    } = useApi<Appointment[]>(apiService.getAppointments); 
+        execute: fetchTurnos
+    } = useApi<Appointment[]>(apiService.getAppointments);
 
-    const [openDialog, setOpenDialog] = useState(false);
+    // --- Estados para Modales ---
+    const [openDialog, setOpenDialog] = useState(false); // Modal de Formulario (Crear/Editar)
     const [turnoToEdit, setTurnoToEdit] = useState<Appointment | null>(null);
-    const [turnoToCancel, setTurnoToCancel] = useState<Appointment | null>(null);
+
+    const [turnoToCancel, setTurnoToCancel] = useState<Appointment | null>(null); // Modal de Confirmar Cancelación
+
+    // --- NUEVO: Estados para Modal de Detalles ---
+    const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+    const [turnoToShow, setTurnoToShow] = useState<Appointment | null>(null);
+    // --- FIN NUEVO ---
+
     const [alertMessage, setAlertMessage] = useState<{ tipo: 'success' | 'error', texto: string } | null>(null);
 
 
@@ -57,7 +68,7 @@ export default function TurnosPage() {
     }, [errorList]);
 
 
-    // Manejadores de Modal
+    // Manejadores de Modal (Crear/Editar)
     const handleOpenCreate = () => {
         setTurnoToEdit(null);
         setOpenDialog(true);
@@ -73,10 +84,21 @@ export default function TurnosPage() {
         setTurnoToEdit(null);
     };
 
-    // 💡 5. 'handleSuccess' ahora llama a 'fetchTurnos' (que es el 'execute' del hook)
+    // --- NUEVO: Handlers para Modal de Detalles ---
+    const handleOpenDetailModal = (turno: Appointment) => {
+        setTurnoToShow(turno); // Guarda el turno a mostrar
+        setIsDetailModalOpen(true); // Abre el modal de detalles
+    };
+
+    const handleCloseDetailModal = () => {
+        setIsDetailModalOpen(false);
+        setTurnoToShow(null); // Limpia al cerrar
+    };
+    // --- FIN NUEVO ---
+
     const handleSuccess = (message: string) => {
         setAlertMessage({ tipo: 'success', texto: message });
-        fetchTurnos(); 
+        fetchTurnos();
     };
 
     // Manejadores de Eliminación (Cancelación)
@@ -112,11 +134,11 @@ export default function TurnosPage() {
     const getEstadoColor = (state: string) => {
         switch (state.toLowerCase()) {
             case 'confirmado':
-            case 'reserved': 
-            case 'reservado': 
+            case 'reserved':
+            case 'reservado':
                 return 'success.main';
             case 'pendiente':
-            case 'atendido': 
+            case 'atendido':
                 return 'warning.main';
             case 'cancelado':
                 return 'error.main';
@@ -129,14 +151,14 @@ export default function TurnosPage() {
     return (
         <Box sx={{ p: 3 }}>
 
-            <Box sx={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center', 
-                    mb: 3,
-                    pb: 1,
-                    borderBottom: '1px solid #e0e0e0' 
-                }}>
+            <Box sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                mb: 3,
+                pb: 1,
+                borderBottom: '1px solid #e0e0e0'
+            }}>
                 <Typography variant="h4" component="h1" color="primary" sx={{ fontWeight: 'bold' }}>
                     AGENDA DE TURNOS 🗓️
                 </Typography>
@@ -144,7 +166,7 @@ export default function TurnosPage() {
                 <Button
                     variant="contained" color="primary" size="large"
                     startIcon={<AddIcon />} onClick={handleOpenCreate}
-                    disabled={isLoadingList} 
+                    disabled={isLoadingList}
                 >
                     NUEVO TURNO
                 </Button>
@@ -170,7 +192,6 @@ export default function TurnosPage() {
             <Paper elevation={3}>
                 <TableContainer>
                     <Table sx={{ minWidth: 800 }} aria-label="tabla de turnos">
-                        {/* ... (TableHead sin cambios) ... */}
                         <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
                             <TableRow>
                                 <TableCell sx={{ fontWeight: 'bold' }}>Fecha / Hora</TableCell>
@@ -183,7 +204,6 @@ export default function TurnosPage() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {/* 💡 6. Lógica de renderizado actualizada para 'null' */}
                             {!isLoadingList && (!turnos || turnos.length === 0) ? (
                                 <TableRow>
                                     <TableCell colSpan={7} align="center">
@@ -191,14 +211,12 @@ export default function TurnosPage() {
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                // 💡 7. Mapeo seguro con (turnos ?? [])
                                 (turnos ?? []).map((turno) => (
                                     <TableRow
                                         key={turno.id_appointment}
                                         hover
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                     >
-                                        {/* ... (Celdas de la tabla sin cambios) ... */}
                                         <TableCell component="th" scope="row">
                                             <Stack direction="row" alignItems="center" spacing={0.5}>
                                                 <AccessTimeIcon fontSize="small" color="disabled" />
@@ -206,8 +224,8 @@ export default function TurnosPage() {
                                                 <Typography variant="body2" color="text.secondary">({turno.hour})</Typography>
                                             </Stack>
                                         </TableCell>
-                                        <TableCell>{turno.patient?.id_patient ?? '-'}</TableCell>
-                                        <TableCell>{turno.doctor?.id_doctor ?? '-'}</TableCell>
+                                        <TableCell>{turno.patient?.name} {turno.patient?.lastname},  {`(${turno.patient?.id_patient ?? '-'})`}</TableCell>
+                                        <TableCell>Dr {turno.doctor?.name} {turno.doctor?.lastname}, {`(${turno.doctor?.id_doctor ?? '-'})`}</TableCell>
                                         <TableCell>{turno.medical_office?.number_office ?? '-'}</TableCell>
                                         <TableCell>{turno.observations?.substring(0, 30)}...</TableCell>
                                         <TableCell>
@@ -223,6 +241,18 @@ export default function TurnosPage() {
                                             </Box>
                                         </TableCell>
                                         <TableCell align="center">
+
+                                            {/* --- NUEVO: Botón Ver Detalles --- */}
+                                            <IconButton
+                                                color="default"
+                                                size="small"
+                                                onClick={() => handleOpenDetailModal(turno)}
+                                                sx={{ mr: 1 }}
+                                            >
+                                                <VisibilityIcon />
+                                            </IconButton>
+
+
                                             <IconButton
                                                 color="primary" size="small"
                                                 onClick={() => handleOpenEdit(turno)} sx={{ mr: 1 }}
@@ -234,7 +264,7 @@ export default function TurnosPage() {
                                                 size="small"
                                                 onClick={() => setTurnoToCancel(turno)}
                                             >
-                                                <DeleteOutlineOutlinedIcon />
+                                                <EventBusyOutlinedIcon />
                                             </IconButton>
                                         </TableCell>
                                     </TableRow>
@@ -245,7 +275,7 @@ export default function TurnosPage() {
                 </TableContainer>
             </Paper>
 
-            {/* Modal de Creación/Edición (sin cambios) */}
+            {/* Modal de Creación/Edición */}
             <TurnoFormDialog
                 open={openDialog}
                 onClose={handleCloseDialog}
@@ -253,17 +283,80 @@ export default function TurnosPage() {
                 onSuccess={handleSuccess}
             />
 
-            {/* Diálogo de Confirmación de Eliminación (sin cambios) */}
+            {/* --- NUEVO: Modal de Detalles  --- */}
+            <Dialog
+                open={isDetailModalOpen}
+                onClose={handleCloseDetailModal}
+                fullWidth
+                maxWidth="sm"
+            >
+                <DialogTitle sx={{ backgroundColor: 'primary.main', color: 'white' }}>
+                    <Typography variant="h6">DETALLES DEL TURNO</Typography>
+                </DialogTitle>
+
+                <DialogContent dividers>
+                    {turnoToShow && (
+                        <Stack spacing={2.5} sx={{ pt: 1.5 }}>
+                            <Typography variant="body1">
+                                <strong>Paciente:</strong>
+                                {` ${turnoToShow.patient?.name} ${turnoToShow.patient?.lastname} (DNI: ${turnoToShow.patient?.dni ?? '-'})`}
+                            </Typography>
+
+                            <Typography variant="body1">
+                                <strong>Médico:</strong>
+                                {` Dr. ${turnoToShow.doctor?.name} ${turnoToShow.doctor?.lastname}`}
+                            </Typography>
+
+                            <Typography variant="body1">
+                                <strong>Consultorio:</strong>
+                                {` Nro. ${turnoToShow.medical_office?.number_office ?? '-'}`}
+                            </Typography>
+
+                            <Typography variant="body1">
+                                <strong>Fecha y Hora:</strong>
+                                {` ${turnoToShow.date} a las ${turnoToShow.hour} hs.`}
+                            </Typography>
+
+                            <Typography variant="body1" component="div">
+                                <strong>Estado:</strong>
+                                <Chip
+                                    label={turnoToShow.state}
+                                    size="small"
+                                    sx={{
+                                        ml: 1,
+                                        color: 'white',
+                                        bgcolor: getEstadoColor(turnoToShow.state ?? ''),
+                                        fontSize: '0.8rem',
+                                        fontWeight: 500
+                                    }}
+                                />
+                            </Typography>
+
+                            <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                                <strong>Observaciones:</strong>
+                                {`\n${turnoToShow.observations || 'N/A'}`}
+                            </Typography>
+                        </Stack>
+                    )}
+                </DialogContent>
+
+                <DialogActions sx={{ p: 2 }}>
+                    <Button onClick={handleCloseDetailModal} variant="outlined" color="secondary" startIcon={<CancelIcon />}>
+                        Cerrar
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+
             <Dialog
                 open={!!turnoToCancel}
                 onClose={() => setTurnoToCancel(null)}
                 maxWidth="xs"
             >
-                {/* ... (Contenido del diálogo sin cambios) ... */}
-                <DialogTitle sx={{ color: 'error.main' }}>Confirmar Cancelación de Turno</DialogTitle>
+                <DialogTitle sx={{ color: 'error.main' }}>CONFIRMAR CANCELACION DE TURNO</DialogTitle>
                 <DialogContent dividers>
                     <Typography>
-                        ¿Estás seguro de que deseas **cancelar** el turno del día **{turnoToCancel?.date}** a las **{turnoToCancel?.hour}**?
+                        ¿Deseas cancelar el turno del día ({turnoToCancel?.date}) a las {turnoToCancel?.hour} hs?
                     </Typography>
                 </DialogContent>
                 <DialogActions>

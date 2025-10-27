@@ -76,21 +76,46 @@ export const PacienteFormDialog: React.FC<PacienteFormDialogProps> = ({ open, on
         setError(null);
         setIsLoading(true);
 
+        // --- INICIO DE VALIDACIÓN ---
+        
+        // 1. Definir las expresiones regulares
+        // (Asumo 7 u 8 dígitos para DNI y 10-15 para teléfono)
+        const dniRegex = /^\d{7,8}$/;
+        const phoneRegex = /^[\d\s\-+]{8,10}$/;
+
+        // 2. Validar campos requeridos
+        if (!form.name || !form.lastname || !form.dni || !form.phone) {
+            setError("Los campos Nombre, Apellido, DNI y Teléfono son obligatorios.");
+            setIsLoading(false); // Detener el "cargando"
+            return; // Salir de la función
+        }
+
+        // 3. Validar formato de DNI
+        if (!dniRegex.test(form.dni)) {
+            setError("El DNI es inválido. Debe tener 7 u 8 dígitos numéricos.");
+            setIsLoading(false);
+            return;
+        }
+        
+        // 4. Validar formato de Teléfono
+        if (!phoneRegex.test(form.phone)) {
+            setError("El teléfono es inválido. Debe tener entre 10 y 15 caracteres.");
+            setIsLoading(false);
+            return;
+        }
+
         try {
             if (isEditing) {
-                // Llama a apiService.updatePatient con id_patient y el DTO
                 const id = pacienteInicial!.id_patient; 
                 await apiService.updatePatient(id, form as UpdatePatient);
                 onSuccess(`Paciente ${form.name} actualizado con éxito.`);
             } else {
-                // Llama a apiService.createPatient con el DTO
                 await apiService.createPatient(form);
                 onSuccess(`Paciente ${form.name} creado con éxito.`);
             }
-            onClose(); // Cierra el modal solo si la operación fue exitosa
+            onClose(); 
         } catch (e) {
             console.error(e);
-            // Intenta obtener un mensaje de error más específico si la API lo envía
             const errorMsg = (e as any).response?.data?.message || "Error al guardar el paciente. Inténtalo de nuevo.";
             setError(errorMsg);
         } finally {

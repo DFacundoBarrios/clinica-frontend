@@ -43,23 +43,23 @@ export interface MedicalOffice {
 }
 
 export interface Appointment {
-  id_appointment: number;
-  date: string; 
-  hour: string;
-  observations?: string; 
-  state?: AppointmentState;
-  patient?: Patient; 
-  doctor?: Doctor;
-  medical_office?: MedicalOffice;
+  id_appointment: number;
+  date: string;
+  hour: string;
+  observations?: string;
+  state?: AppointmentState;
+  patient?: Patient;
+  doctor?: Doctor;
+  medical_office?: MedicalOffice;
 }
 
 export interface CreateAppointment {
-    date: string;
-    hour: string;
-    observations?: string;
-    patientIdPatient: number; 
-    doctorIdDoctor: number; 
-    medicalOfficeNumberOffice: number; 
+  date: string;
+  hour: string;
+  observations?: string;
+  patientIdPatient: number;
+  doctorIdDoctor: number;
+  medicalOfficeNumberOffice: number;
 }
 
 

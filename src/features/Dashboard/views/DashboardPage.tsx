@@ -69,7 +69,7 @@ const AppointmentStatusBarChart: React.FC<ChartProps> = ({ data }) => (
 );
 
 
-// --- 💡 2. Componente del Modal de Información ---
+// --- . Componente del Modal de Información ---
 const InfoDialog = ({ open, onClose, title, children }: {
     open: boolean,
     onClose: () => void,
@@ -119,7 +119,7 @@ const DashboardPage: React.FC = () => {
         apiService.getPatients
     );
 
-    // --- 💡 4. Procesar y calcular datos (actualizado) ---
+    // --- Procesar y calcular datos ---
 
     // Filtramos los turnos que son para hoy
     const turnosHoy = useMemo(() => {
@@ -150,9 +150,9 @@ const DashboardPage: React.FC = () => {
 
     // Datos del gráfico (sin cambios)
     const appointmentStatusData = useMemo(() => [
-        { name: 'Reservados', cantidad: turnosHoy.filter(t => t.state === 'RESERVADO').length, fill: '#82ca9d' },
-        { name: 'Atendidos', cantidad: turnosHoy.filter(t => t.state === 'ATENDIDO').length, fill: '#8884d8' },
-        { name: 'Cancelados', cantidad: turnosHoy.filter(t => t.state === 'CANCELADO').length, fill: '#ff8042' },
+        { name: 'Reservados', cantidad: turnosHoy.filter(t => t.state === 'RESERVADO').length, fill: '#f1bd02ff' },
+        { name: 'Atendidos', cantidad: turnosHoy.filter(t => t.state === 'ATENDIDO').length, fill: '#1eec0bff' },
+        { name: 'Cancelados', cantidad: turnosHoy.filter(t => t.state === 'CANCELADO').length, fill: '#d10000ff' },
     ], [turnosHoy]);
 
 

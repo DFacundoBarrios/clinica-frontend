@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'; // 💡 1. Importar useCallback
+import { useState, useEffect, useCallback } from 'react'; 
 import type { AxiosResponse, AxiosError } from 'axios';
 
 interface UseApiResult<T> {

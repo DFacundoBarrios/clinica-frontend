@@ -3,27 +3,27 @@ import { api } from 'src/shared/libs/nestAxios.ts';
 
 export class PacientesService {
   static async crearPaciente(dto: PacienteCrearDto) {
-    const resultado = await api.post('/api/pacientes', dto);
+    const resultado = await api.post('/patients', dto);
     return resultado;
   }
 
   static async obtenerPacientes() {
-    const resultado = await api.get<Paciente[]>('/api/pacientes');
+    const resultado = await api.get<Paciente[]>('/patients');
     return resultado.data;
   }
 
   static async obtenerPacientePorId(id: number) {
-    const resultado = await api.get<Paciente>(`/api/pacientes/${id}`);
+    const resultado = await api.get<Paciente>(`/patients/${id}`);
     return resultado.data;
   }
 
   static async actualizarPaciente(id: number, dto: PacienteCrearDto) {
-    const resultado = await api.put(`/api/pacientes/${id}`, dto);
+    const resultado = await api.put(`/patients/${id}`, dto);
     return resultado;
   }
 
   static async eliminarPaciente(id: number) {
-    const resultado = await api.delete(`/api/pacientes/${id}`);
+    const resultado = await api.delete(`/patients/${id}`);
     return resultado;
   }
 }

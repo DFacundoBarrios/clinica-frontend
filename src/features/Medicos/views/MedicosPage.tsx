@@ -1,15 +1,15 @@
-import { 
-    Box, 
-    Typography, 
-    Card, 
-    CardContent, 
-    Alert, 
+import {
+    Box,
+    Typography,
+    Card,
+    CardContent,
+    Alert,
     CircularProgress,
     Divider,
     Stack
 } from '@mui/material';
-import AccessTimeIcon from '@mui/icons-material/AccessTime'; 
-import BadgeIcon from '@mui/icons-material/Badge'; 
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar';
 import { useApi } from 'src/hooks/useApi';
 import { apiService } from 'src/services/api';
 import type { Doctor } from 'src/types';
@@ -17,12 +17,12 @@ import type { Doctor } from 'src/types';
 // Función auxiliar para obtener el mensaje de error de forma segura
 const getErrorMessage = (err: unknown): string => {
     if (!err) return 'Error desconocido.';
-    
+
     // Si el error es una cadena, la devolvemos.
     if (typeof err === 'string') {
         return err;
     }
-    
+
     // Si es un objeto, intentamos acceder a 'message' o proporcionamos un mensaje predeterminado.
     if (err && typeof err === 'object' && 'message' in err) {
         return err.message as string;
@@ -39,17 +39,18 @@ export default function MedicosPage() {
 
     return (
         <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            
-            {/* Título */}
-            <Box sx={{ width: '100%', maxWidth: 700 }}>
-                <Typography 
-                    variant="h4" 
-                    component="h1" 
-                    color="text.primary" 
-                    sx={{ fontWeight: 'bold', mb: 4, pb: 1, borderBottom: '2px solid #007bff' }}
-                >
-                    Nuestros Profesionales 🩺
-                </Typography>
+
+            <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center', 
+                    mb: 3,
+                    pb: 1,
+                    borderBottom: '1px solid #e0e0e0' 
+                }}>
+                <Typography variant="h4" component="h1" color="primary" sx={{ fontWeight: 'bold' }}>
+                                    NUESTROS PROFESIONALES 🩺
+                                </Typography>
             </Box>
 
             {/* Estado de carga */}
@@ -63,7 +64,6 @@ export default function MedicosPage() {
             {/* Error */}
             {error && (
                 <Alert severity="error" sx={{ mb: 3, width: '100%', maxWidth: 700 }}>
-                    {/* 💡 CORRECCIÓN APLICADA: Usamos la función auxiliar */}
                     {getErrorMessage(error)}
                 </Alert>
             )}
@@ -76,12 +76,11 @@ export default function MedicosPage() {
                     </Alert>
                 ) : (
                     doctors?.map((doctor) => (
-                        <Card 
-                            // Asegúrate de usar una propiedad única que exista en Doctor (ej: id_medico, id_doctor, enrollment)
-                            key={doctor.id_doctor || doctor.enrollment} 
-                            elevation={4} 
-                            sx={{ 
-                                borderLeft: `5px solid #007bff`, 
+                        <Card
+                            key={doctor.id_doctor || doctor.enrollment}
+                            elevation={4}
+                            sx={{
+                                borderLeft: `5px solid #007bff`,
                                 transition: '0.3s',
                                 '&:hover': {
                                     boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
@@ -90,24 +89,26 @@ export default function MedicosPage() {
                         >
                             <CardContent>
                                 {/* Nombre y Apellido: Asumo que tu tipo Doctor usa 'name' y 'lastname' */}
-                                <Typography 
-                                    variant="h5" 
-                                    component="div" 
+                                <Typography
+                                    variant="h5"
+                                    component="div"
                                     sx={{ fontWeight: 600, color: 'primary.dark' }}
                                 >
                                     {doctor.name} {doctor.lastname}
                                 </Typography>
-                                
+
                                 <Divider sx={{ my: 1.5 }} />
 
                                 {/* Detalles */}
                                 <Stack spacing={1} sx={{ mt: 1 }}>
-                                    
-                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                        <BadgeIcon color="primary" sx={{ mr: 1, fontSize: 18 }} />
+
+                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>  
+                                        <PermContactCalendarIcon color="primary" sx={{ mr: 1, fontSize: 18 }} />
+
                                         <Typography variant="body1" fontWeight="bold">
                                             Matrícula:
                                         </Typography>
+
                                         <Typography variant="body1" sx={{ ml: 0.5 }}>
                                             {doctor.enrollment}
                                         </Typography>
@@ -120,7 +121,8 @@ export default function MedicosPage() {
                                                 Horario de Atención:
                                             </Typography>
                                             <Typography variant="body2" color="text.secondary">
-                                                {doctor.start_time}
+                                                {/* 💡 CORRECCIÓN APLICADA: Usamos .slice(0, 5) para obtener solo HH:MM */}
+                                                {doctor.start_time.slice(0, 5)} - {doctor.end_time.slice(0, 5)}
                                             </Typography>
                                         </Stack>
                                     </Box>

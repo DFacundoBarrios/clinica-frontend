@@ -12,19 +12,20 @@ import {
 } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save'; 
 import CancelIcon from '@mui/icons-material/Cancel'; 
-import type { PacienteCrearDto } from "./../types/PacienteTypes";
-import { PacientesService } from "./../services/PacientesService";
+import { apiService } from 'src/services/api';
+import type { CreatePatient } from 'src/types';
 
-const estadoInicial: PacienteCrearDto = {
-    nombre: "",
-    apellido: "",
+// 💡 CORRECCIÓN: Usar los nombres de las propiedades esperadas por el backend (name, lastname)
+const estadoInicial: CreatePatient = {
+    name: "",      
+    lastname: "",  
     dni: "",
-    telefono: "",
-    direccion: "",
+    phone: "",
+    address: "",
 };
 
 export default function PacientesCrearPage() {
-    const [form, setForm] = useState<PacienteCrearDto>(estadoInicial);
+    const [form, setForm] = useState<CreatePatient>(estadoInicial);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null); 
     const navigate = useNavigate();
@@ -36,9 +37,16 @@ export default function PacientesCrearPage() {
         setIsLoading(true);
 
         try {
-            await PacientesService.crearPaciente(form);
-            alert("Paciente creado con éxito"); 
-            navigate('/pacientes', { state: { successMessage: "Paciente creado con éxito." } });
+            // Envía el objeto 'form' con las propiedades en inglés (name, lastname)
+            await apiService.createPatient(form);
+            
+            // Redirección con mensaje de éxito (sin alert nativo)
+            navigate('/patients', { 
+                state: { 
+                    successMessage: `Paciente ${form.name} ${form.lastname} creado con éxito.` 
+                } 
+            });
+            
         } catch (e) {
             console.error(e);
             setError("Error al crear el paciente. Por favor, verifica los datos e inténtalo de nuevo.");
@@ -54,118 +62,88 @@ export default function PacientesCrearPage() {
             ...prevFormData,
             [name]: value
         }));
+        // Limpiar error al empezar a escribir
+        if (error) { 
+            setError(null);
+        }
     }
 
     return (
-        // Contenedor principal centrado
         <Box sx={{ p: 3, display: 'flex', justifyContent: 'center' }}>
-            {/* Contenedor de Formulario (Efecto de Tarjeta con Sombra) */}
             <Paper elevation={6} sx={{ p: 4, width: '100%', maxWidth: 500 }}>
                 
-                {/* Título de la Sección */}
                 <Typography 
-                    variant="h4" 
-                    component="h1" 
-                    gutterBottom 
-                    color="primary" 
+                    variant="h4" component="h1" gutterBottom color="primary" 
                     sx={{ fontWeight: 'bold', mb: 3 }}
                 >
-                    Registro de Nuevo Paciente 📝
+                    REGISTRO DE NUEVO PACIENTE 📝
                 </Typography>
                 
-                {/* Mensaje de Error (si existe) */}
                 {error && (
                     <Alert severity="error" sx={{ mb: 2 }}>
                         {error}
                     </Alert>
                 )}
 
-                {/* Formulario */}
                 <form autoComplete="off" noValidate onSubmit={handleOnSubmit}>
-                    
-                    {/* Campos del Formulario - Usando STACK para disposición vertical */}
                     <Stack spacing={2}> 
                         
                         {/* Nombre */}
                         <TextField
-                            fullWidth
-                            required
-                            variant="outlined" 
-                            value={form.nombre}
-                            name="nombre"
+                            fullWidth required variant="outlined" 
+                            value={form.name}     
+                            name="name"           
                             onChange={handleOnChange}
-                            label="Nombre"
+                            label="Nombre"        
                         />
                         
                         {/* Apellido */}
                         <TextField
-                            fullWidth
-                            required
-                            variant="outlined"
-                            value={form.apellido}
-                            name="apellido"
+                            fullWidth required variant="outlined"
+                            value={form.lastname} 
+                            name="lastname"       
                             onChange={handleOnChange}
-                            label="Apellido"
+                            label="Apellido"      
                         />
 
                         {/* DNI */}
                         <TextField
-                            fullWidth
-                            required
-                            variant="outlined"
-                            value={form.dni}
-                            name="dni"
-                            onChange={handleOnChange}
-                            label="DNI"
+                            fullWidth required variant="outlined"
+                            value={form.dni} name="dni"
+                            onChange={handleOnChange} label="DNI"
                             type="text" 
                         />
                         
                         {/* Teléfono */}
                         <TextField
-                            fullWidth
-                            required
-                            variant="outlined"
-                            value={form.telefono}
-                            name="telefono"
-                            onChange={handleOnChange}
-                            label="Teléfono"
+                            fullWidth required variant="outlined"
+                            value={form.phone} name="phone"
+                            onChange={handleOnChange} label="Teléfono"
                             type="tel"
                         />
                         
                         {/* Dirección */}
                         <TextField
-                            fullWidth
-                            required
-                            multiline
-                            rows={2}
+                            fullWidth required multiline rows={2}
                             variant="outlined"
-                            value={form.direccion}
-                            name="direccion"
-                            onChange={handleOnChange}
-                            label="Dirección"
+                            value={form.address} name="address"
+                            onChange={handleOnChange} label="Dirección"
                         />
                         
                         {/* Botones de Acción */}
                         <Box sx={{ pt: 1, display: 'flex', justifyContent: 'flex-start', gap: 2 }}>
                             
-                            {/* Botón de Guardar */}
                             <Button 
-                                variant="contained" 
-                                color="primary"
-                                type="submit"
-                                startIcon={<SaveIcon />}
-                                disabled={isLoading}
+                                variant="contained" color="primary" type="submit"
+                                startIcon={<SaveIcon />} disabled={isLoading}
                             >
                                 {isLoading ? 'Guardando...' : 'Guardar'}
                             </Button>
                             
-                            {/* Botón de Cancelar */}
                             <Button 
-                                variant="outlined" 
-                                color="secondary"
-                                onClick={() => navigate('/pacientes')} 
-                                startIcon={<CancelIcon />}
-                                disabled={isLoading}
+                                variant="outlined" color="secondary"
+                                onClick={() => navigate('/patients')} 
+                                startIcon={<CancelIcon />} disabled={isLoading}
                             >
                                 Cancelar
                             </Button>

@@ -2,7 +2,7 @@
 // ENUMS
 // ============================================
 
-export type AppointmentState = 'reserved' | 'attended' | 'canceled';
+export type AppointmentState = 'RESERVADO' | 'ATENDIDO' | 'CANCELADO';
 
 // ============================================
 // INTERFACES PRINCIPALES
@@ -43,19 +43,25 @@ export interface MedicalOffice {
 }
 
 export interface Appointment {
-  id_appointment: number;
-  date: string; // Viene como string desde JSON
-  hour: string;
-  observations: string;
-  state: AppointmentState;
-  patient?: Patient;
-  doctor?: Doctor;
-  medical_office?: MedicalOffice;
+  id_appointment: number;
+  date: string; 
+  hour: string;
+  observations?: string; 
+  state?: AppointmentState;
+  patient?: Patient; 
+  doctor?: Doctor;
+  medical_office?: MedicalOffice;
 }
 
-// ============================================
-// TIPOS PARA CREAR (sin ID)
-// ============================================
+export interface CreateAppointment {
+    date: string;
+    hour: string;
+    observations?: string;
+    patientIdPatient: number; 
+    doctorIdDoctor: number; 
+    medicalOfficeNumberOffice: number; 
+}
+
 
 export interface CreatePatient {
   name: string;
@@ -65,16 +71,6 @@ export interface CreatePatient {
   address: string;
 }
 
-
-export interface CreateAppointment {
-  date: string; // formato: 'YYYY-MM-DD'
-  hour: string; // formato: 'HH:MM'
-  observations?: string;
-  patientId: number;
-  doctorId: number;
-  medicalOfficeNumber: number;
-  state?: AppointmentState;
-}
 
 // ============================================
 // TIPOS PARA ACTUALIZAR (Partial)

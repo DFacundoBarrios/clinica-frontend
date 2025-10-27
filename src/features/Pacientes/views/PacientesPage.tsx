@@ -108,13 +108,14 @@ export default function PacientesPage() {
         <Box sx={{ p: 3 }}>
 
             {/* Título y Botón (sin cambios) */}
-            <Box
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    // ...
-                }}
-            >
+            <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center', 
+                    mb: 3,
+                    pb: 1,
+                    borderBottom: '1px solid #e0e0e0' 
+                }}>
                 <Typography variant="h4" component="h1" color="primary" sx={{ fontWeight: 'bold' }}>
                     AGENDA DE PACIENTES 🧑‍⚕️
                 </Typography>

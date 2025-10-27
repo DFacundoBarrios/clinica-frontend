@@ -129,13 +129,14 @@ export default function TurnosPage() {
     return (
         <Box sx={{ p: 3 }}>
 
-            <Box
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    // ...
-                }}
-            >
+            <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center', 
+                    mb: 3,
+                    pb: 1,
+                    borderBottom: '1px solid #e0e0e0' 
+                }}>
                 <Typography variant="h4" component="h1" color="primary" sx={{ fontWeight: 'bold' }}>
                     AGENDA DE TURNOS 🗓️
                 </Typography>

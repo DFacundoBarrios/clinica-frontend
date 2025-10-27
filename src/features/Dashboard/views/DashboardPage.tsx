@@ -116,7 +116,7 @@ const DashboardPage: React.FC = () => {
         <Box sx={{ p: 3, backgroundColor: '#f4f6f8', minHeight: 'calc(100vh - 64px)' }}>
             {/* Encabezado */}
             <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.dark' }}>
-                Resumen General 🏥
+                RESUMEN GENERAL 🏥
             </Typography>
             <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 4 }}>
                 Vista rápida de la actividad de la clínica.

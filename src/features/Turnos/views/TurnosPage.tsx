@@ -28,7 +28,7 @@ import EventBusyOutlinedIcon from '@mui/icons-material/EventBusyOutlined';
 import AddIcon from '@mui/icons-material/Add';
 import CancelIcon from '@mui/icons-material/Cancel';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import VisibilityIcon from '@mui/icons-material/Visibility'; 
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 //para el backend
 import { useApi } from 'src/hooks/useApi';
@@ -50,10 +50,9 @@ export default function TurnosPage() {
     // --- Estados para Modales ---
     const [openDialog, setOpenDialog] = useState(false); // Modal de Formulario (Crear/Editar)
     const [turnoToEdit, setTurnoToEdit] = useState<Appointment | null>(null);
-
+    const [turnoToDelete, setTurnoToDelete] = useState<Appointment | null>(null);
     const [turnoToCancel, setTurnoToCancel] = useState<Appointment | null>(null); // Modal de Confirmar Cancelación
 
-    // --- NUEVO: Estados para Modal de Detalles ---
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [turnoToShow, setTurnoToShow] = useState<Appointment | null>(null);
     // --- FIN NUEVO ---
@@ -117,6 +116,21 @@ export default function TurnosPage() {
             setAlertMessage({ tipo: 'error', texto: `No se pudo cancelar el turno.` });
         } finally {
             setTurnoToCancel(null);
+        }
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!turnoToDelete) return;
+
+        try {
+            await apiService.deleteAppointment(turnoToDelete.id_appointment);
+            handleSuccess(`Turno con id: ${turnoToDelete.id_appointment} eliminado con éxito.`);
+
+        } catch (error) {
+            console.error("Error al eliminar turno:", error);
+            setAlertMessage({ tipo: 'error', texto: `No se pudo eliminar al turno ${turnoToDelete.id_appointment}.` });
+        } finally {
+            setTurnoToDelete(null);
         }
     };
 
@@ -259,6 +273,7 @@ export default function TurnosPage() {
                                             >
                                                 <EditOutlinedIcon />
                                             </IconButton>
+
                                             <IconButton
                                                 color="error"
                                                 size="small"
@@ -266,6 +281,34 @@ export default function TurnosPage() {
                                             >
                                                 <EventBusyOutlinedIcon />
                                             </IconButton>
+
+                                            <IconButton color="error" size="small" aria-label="eliminar" onClick={() => setTurnoToDelete(turno)} >
+                                                <DeleteOutlineOutlinedIcon />
+                                            </IconButton>
+
+                                            <Dialog
+                                                open={!!turnoToDelete}
+                                                onClose={() => setTurnoToDelete(null)}
+                                                maxWidth="xs"
+                                            >
+                                                {/* ... (Contenido del diálogo sin cambios) ... */}
+                                                <DialogTitle sx={{ color: 'error.main' }}>CONFIRMAR ELIMINACION</DialogTitle>
+                                                <DialogContent dividers>
+                                                    <Typography>
+                                                        ¿Estás seguro de que deseas eliminar el turno?
+                                                        *{turnoToDelete?.id_appointment} {turnoToDelete?.date}?*
+                                                        Esta acción es irreversible.
+                                                    </Typography>
+                                                </DialogContent>
+                                                <DialogActions>
+                                                    <Button onClick={() => setTurnoToDelete(null)} startIcon={<CancelIcon />}>
+                                                        Cancelar
+                                                    </Button>
+                                                    <Button onClick={handleConfirmDelete} color="error" variant="contained" startIcon={<DeleteOutlineOutlinedIcon />} autoFocus>
+                                                        Eliminar
+                                                    </Button>
+                                                </DialogActions>
+                                            </Dialog>
                                         </TableCell>
                                     </TableRow>
                                 ))

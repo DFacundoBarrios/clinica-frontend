@@ -14,7 +14,7 @@ const Main = styled("main")(({ theme }) => ({
   flexGrow: 1,
   padding: theme.spacing(3),
   minHeight: "100dvh",
-  background: theme.palette.mode === "light" ? "#f8f8f8ff" : theme.palette.background.default,
+  background: theme.palette.mode === "light" ? "#eeeeeeff" : theme.palette.background.default,
 }));
 
 export default function AppLayout() {

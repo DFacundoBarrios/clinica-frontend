@@ -6,6 +6,7 @@ import * as React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 
+
 const SidenavLink = ({
   to,
   icon,
@@ -41,10 +42,10 @@ interface SidenavLinksProps {
 export default function SidenavLinks(props: SidenavLinksProps) {
   return (
     <>
-      <SidenavLink to="/" icon={<DashboardOutlinedIcon />} label="Inicio" onClick={props.handleClick} />
-      <SidenavLink to="/turnos" icon={<CalendarMonthOutlinedIcon />} label="Agenda Turnos" onClick={props.handleClick} />
-      <SidenavLink to="/pacientes" icon={<PeopleAltOutlinedIcon />} label="Pacientes" onClick={props.handleClick} />
-      <SidenavLink to="/medicos" icon={<MedicalServicesOutlinedIcon />} label="Medicos" onClick={props.handleClick} />
+      <SidenavLink to="/" icon={<DashboardOutlinedIcon />} label="INICIO" onClick={props.handleClick} />
+      <SidenavLink to="/turnos" icon={<CalendarMonthOutlinedIcon />} label="AGENDA TURNOS" onClick={props.handleClick} />
+      <SidenavLink to="/pacientes" icon={<PeopleAltOutlinedIcon />} label="PACIENTES" onClick={props.handleClick} />
+      <SidenavLink to="/medicos" icon={<MedicalServicesOutlinedIcon />} label="MEDICOS" onClick={props.handleClick} />
     </>
   )
 }

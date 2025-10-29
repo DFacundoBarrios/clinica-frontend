@@ -216,8 +216,8 @@ export default function PacientesPage() {
                 <DialogTitle sx={{ color: 'error.main' }}>Confirmar Eliminación</DialogTitle>
                 <DialogContent dividers>
                     <Typography>
-                        ¿Estás seguro de que deseas eliminar al paciente
-                        *{pacienteToDelete?.name} {pacienteToDelete?.lastname}?*
+                        ¿Estás seguro de que deseas eliminar al paciente ''
+                        {pacienteToDelete?.name} {pacienteToDelete?.lastname}''?
                         Esta acción es irreversible.
                     </Typography>
                 </DialogContent>

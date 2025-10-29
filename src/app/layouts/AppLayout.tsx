@@ -14,7 +14,7 @@ const Main = styled("main")(({ theme }) => ({
   flexGrow: 1,
   padding: theme.spacing(3),
   minHeight: "100dvh",
-  background: theme.palette.mode === "light" ? "#eeeeeeff" : theme.palette.background.default,
+  background: theme.palette.mode === "light" ? "#ffffffff" : theme.palette.background.default,
 }));
 
 export default function AppLayout() {
@@ -27,7 +27,13 @@ export default function AppLayout() {
   const handleClickSidenav = () => !mdUp ? handleDrawerToggle() : undefined;
 
   const drawer = (
-    <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+    <Box
+      sx={{
+        height: "100%", display: "flex", flexDirection: "column",
+        bgcolor: 'primary.dark', // Color de fondo
+        color: 'white', // Color del texto
+      }}
+    >
       <Box sx={{ p: 2, display: "flex", alignItems: "center", gap: 1 }}>
         <LocalHospitalIcon color="primary" sx={{ fontSize: 32 }} />
         <Typography variant="h6" fontWeight={700}>
@@ -35,14 +41,32 @@ export default function AppLayout() {
         </Typography>
       </Box>
       <Divider />
-      <Box sx={{ p: 1, flex: 1, overflow: "auto" }}>
-        <List component="nav">
+      <Box sx={{ p: 1, flex: 1, overflow: "auto", '& .MuiListItemIcon-root': { color: 'inherit' } }}>
+        <List
+          component="nav"
+          sx={{
+            '& .MuiListItemButton-root': {
+              borderRadius: '7px', // Bordes redondeados
+              marginBottom: '4px', // Espacio entre elementos
+              '&:hover': { // Color para el hover
+                backgroundColor: 'rgba(255, 255, 255, 0.08)', 
+              },
+              // Estilo para el elemento seleccionado
+              '&.Mui-selected': {
+                backgroundColor: 'rgba(255, 255, 255, 0.16)',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.20)', // Un poco más claro al pasar el mouse
+                }
+              },
+            },
+          }}
+        >
           <SidenavLinks handleClick={handleClickSidenav} />
         </List>
       </Box>
       <Divider />
-      <Box sx={{ p: 2 }}>
-        <Typography variant="body2" color="text.secondary">
+      <Box sx={{ p: 2, bgcolor: 'rgba(57, 56, 56, 0.15)' }}>
+        <Typography variant="body2" color="text.white">
           © {new Date().getFullYear()} UTN FRRa
         </Typography>
       </Box>
@@ -52,14 +76,21 @@ export default function AppLayout() {
   return (
     <Box sx={{ display: "flex" }}>
       {/* Barra Superior */}
-      <AppBar position="fixed" sx={{ zIndex: (t) => t.zIndex.drawer + 1, bgcolor: "background.paper", color: "text.primary" }}>
+      <AppBar
+        position="fixed"
+        sx={{
+          zIndex: (t) => t.zIndex.drawer + 1,
+          bgcolor: "background.paper",
+          color: "text.primary",
+          borderBottom: (theme) => `1px solid ${theme.palette.divider}` 
+        }}
+      >
         <Toolbar sx={{ gap: 1 }}>
           {!mdUp && (
             <IconButton edge="start" aria-label="open drawer" onClick={handleDrawerToggle}>
               <MenuIcon />
             </IconButton>
           )}
-
           <Typography
             variant="h6"
             noWrap
@@ -81,7 +112,7 @@ export default function AppLayout() {
           </IconButton>
 
           <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
-            <MenuItem onClick={() => setAnchorEl(null)}>Administradores(Ian - Facundo)</MenuItem>
+            <MenuItem onClick={() => setAnchorEl(null)}>Administrador</MenuItem>
 
           </Menu>
         </Toolbar>

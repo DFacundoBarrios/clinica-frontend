@@ -24,20 +24,20 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 
-//Para graficos
+// recharts para graficos
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-// --- Imports para datos reales ---
+// Imports para datos reales
 import { useApi } from 'src/hooks/useApi';
 import { apiService } from 'src/services/api';
 import type { Appointment, Patient } from 'src/types';
 
-// --- Modales ---
+// Modales
 import { PacienteFormDialog } from 'src/features/Pacientes/views/PacienteFormDialog';
 import { TurnoFormDialog } from 'src/features/Turnos/views/TurnoFormDialog';
 
 
-// --- Función de fecha  ---
+// Función de fecha 
 const getTodayString = () => {
     const today = new Date();
     const year = today.getFullYear();
@@ -47,7 +47,7 @@ const getTodayString = () => {
 };
 
 
-// --- Componente Gráfico ---
+//  Componente Gráfico
 interface ChartProps {
     data: { name: string; cantidad: number; fill: string }[];
 }
@@ -69,7 +69,7 @@ const AppointmentStatusBarChart: React.FC<ChartProps> = ({ data }) => (
 );
 
 
-// --- . Componente del Modal de Información ---
+//  Componente del Modal de Información 
 const InfoDialog = ({ open, onClose, title, children }: {
     open: boolean,
     onClose: () => void,
@@ -90,12 +90,12 @@ const InfoDialog = ({ open, onClose, title, children }: {
 );
 
 
-// --- Componente Principal del Dashboard (Actualizado) ---
+//  Componente Principal del Dashboard
 const DashboardPage: React.FC = () => {
     const [openPacienteDialog, setOpenPacienteDialog] = useState(false);
     const [openTurnoDialog, setOpenTurnoDialog] = useState(false);
 
-    // 💡 3. Estado para el nuevo modal de información
+    // Estado para el nuevo modal de información
     const [modalInfo, setModalInfo] = useState<{
         open: boolean;
         title: string;
@@ -103,7 +103,7 @@ const DashboardPage: React.FC = () => {
     }>({ open: false, title: '', content: null });
 
 
-    // --- Carga de datos (sin cambios) ---
+    // --- Carga de datos
     const {
         data: turnosData,
         loading: loadingTurnos,
@@ -119,8 +119,6 @@ const DashboardPage: React.FC = () => {
         apiService.getPatients
     );
 
-    // --- Procesar y calcular datos ---
-
     // Filtramos los turnos que son para hoy
     const turnosHoy = useMemo(() => {
         if (!turnosData) return [];
@@ -128,7 +126,7 @@ const DashboardPage: React.FC = () => {
         return turnosData.filter(t => (t.date === todayStr || t.date.startsWith(todayStr)));
     }, [turnosData]);
 
-    // 💡 Creamos la lista de turnos pendientes
+    // Creamos la lista de turnos pendientes
     const turnosPendientes = useMemo(() => {
         return turnosHoy.filter(
             t => t.state?.toUpperCase() === 'RESERVADO'
@@ -139,16 +137,15 @@ const DashboardPage: React.FC = () => {
     const stats = useMemo(() => {
         const todayAppointments = turnosHoy.length;
         const totalPacientes = pacientesData?.length ?? 0;
-        const pendingConfirmations = turnosPendientes.length; // 💡 Usamos la lista
+        const pendingConfirmations = turnosPendientes.length; 
 
         return {
             todayAppointments,
             totalPacientes,
             pendingConfirmations,
         };
-    }, [turnosHoy, pacientesData, turnosPendientes]); // 💡 Añadida dependencia
-
-    // Datos del gráfico (sin cambios)
+    }, [turnosHoy, pacientesData, turnosPendientes]); 
+    // Datos del gráfico
     const appointmentStatusData = useMemo(() => [
         { name: 'Reservados', cantidad: turnosHoy.filter(t => t.state === 'RESERVADO').length, fill: '#f1bd02ff' },
         { name: 'Atendidos', cantidad: turnosHoy.filter(t => t.state === 'ATENDIDO').length, fill: '#1eec0bff' },
@@ -156,7 +153,7 @@ const DashboardPage: React.FC = () => {
     ], [turnosHoy]);
 
 
-    // handleSuccess (sin cambios)
+    // handleSuccess 
     const handleSuccess = (message: string) => {
         console.log("Acción exitosa:", message);
         setOpenPacienteDialog(false);
@@ -165,7 +162,6 @@ const DashboardPage: React.FC = () => {
         fetchPacientes();
     };
 
-    // getStatusColor (sin cambios)
     const getStatusColor = (status?: string): "success" | "warning" | "error" | "info" | "default" => {
         switch (status?.toUpperCase()) {
             case 'RESERVADO': return 'success';
@@ -176,7 +172,7 @@ const DashboardPage: React.FC = () => {
         }
     }
 
-    // --- 💡 5. Componentes para renderizar el contenido del modal ---
+    //Componentes para renderizar el contenido del modal ---
 
     // Renderizador para listas de Turnos
     const TurnosListRenderer = ({ turnos }: { turnos: Appointment[] }) => (
@@ -216,7 +212,7 @@ const DashboardPage: React.FC = () => {
     const handleOpenTurnosHoy = () => {
         setModalInfo({
             open: true,
-            title: 'Turnos para Hoy',
+            title: 'TURNOS PARA HOY',
             content: <TurnosListRenderer turnos={turnosHoy} />
         });
     };
@@ -224,7 +220,7 @@ const DashboardPage: React.FC = () => {
     const handleOpenPacientesTotales = () => {
         setModalInfo({
             open: true,
-            title: 'Pacientes Totales',
+            title: 'PACIENTES TOTALES',
             content: <PacientesListRenderer pacientes={pacientesData || []} />
         });
     };
@@ -232,7 +228,7 @@ const DashboardPage: React.FC = () => {
     const handleOpenTurnosPendientes = () => {
         setModalInfo({
             open: true,
-            title: 'Turnos Pendientes (Hoy)',
+            title: 'TURNOS PENDIENTES PARA HOY',
             content: <TurnosListRenderer turnos={turnosPendientes} />
         });
     };
@@ -353,7 +349,7 @@ const DashboardPage: React.FC = () => {
 
             {/* Modales */}
             <PacienteFormDialog open={openPacienteDialog} onClose={() => setOpenPacienteDialog(false)} onSuccess={handleSuccess} />
-            <TurnoFormDialog open={openTurnoDialog} onClose={() => setOpenTurnoDialog(false)} onSuccess={handleSuccess} />
+            <TurnoFormDialog open={openTurnoDialog} onClose={() => setOpenTurnoDialog(false)} onSuccess={handleSuccess} turnos={[]} />
 
             <InfoDialog
                 open={modalInfo.open}

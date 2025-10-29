@@ -22,7 +22,7 @@ import type { Appointment, CreateAppointment, UpdateAppointment, AppointmentStat
 //form
 const estadoInicialForm: CreateAppointment = {
     date: '',
-    hour: '09:00',
+    hour: '08:00',
     observations: '',
     patientIdPatient: 0,
     doctorIdDoctor: 0,
@@ -40,19 +40,20 @@ export interface TurnoFormDialogProps {
     onClose: () => void;
     turnoInicial?: Appointment | null; 
     onSuccess: (message: string) => void;
+    turnos: Appointment[];
 }
 
 
 //modal de creacion
 
-export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose, turnoInicial, onSuccess }) => {
+export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose, turnoInicial, onSuccess, turnos }) => {
 
     const initialFormState = useMemo((): TurnoFormState => {
         if (turnoInicial) {
             const { date, observations, state, patient, doctor, medical_office } = turnoInicial;
 
             let dateForInput = '';
-            let hourForInput = '09:00'; // Default
+            let hourForInput = '08:00'; // Default
 
             if (date) {
 
@@ -196,6 +197,24 @@ export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose,
             return;
         }
 
+        // Validación de turnos duplicados
+        const turnoExistente = turnos.find(turno => {
+            if (isEditing && turno.id_appointment === turnoInicial.id_appointment) {
+                return false;
+            }
+            const turnoDate = new Date(turno.date).toISOString().split('T')[0];
+            const turnoHour = turno.hour.substring(0, 5);
+            const formHour = form.hour.substring(0, 5);
+
+            return turno.doctor?.id_doctor === form.doctorIdDoctor && turnoDate === form.date && turnoHour === formHour;
+        });
+
+        if (turnoExistente) {
+            setListError("Ya existe un turno para este médico en la misma fecha y hora.");
+            setListIsLoading(false);
+            return;
+        }
+
         const dateAsISOString = selectedDateTime.toISOString();
 
         try {
@@ -216,7 +235,7 @@ export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose,
             } else {
                 const { state, ...createPayload } = form;
 
-                // 💡 Enviamos el DTO de creación con la fecha ISO
+                //DTO de creación con la fecha ISO
                 const finalCreatePayload: CreateAppointment = {
                     ...createPayload,
                     date: dateAsISOString,
@@ -228,7 +247,6 @@ export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose,
             onClose(); // Cierra el modal solo si fue exitoso
         } catch (e) {
             console.error(e);
-            // Intenta obtener un mensaje de error más específico si la API lo envía
             const errorMsg = (e as any).response?.data?.message || "Error al guardar el turno. Inténtalo de nuevo.";
             setListError(errorMsg);
         } finally {
@@ -264,7 +282,7 @@ export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose,
                         // Oculta el formulario mientras cargan las listas
                         <Stack spacing={2}>
 
-                            {/* --- IDs de relaciones (SELECTS) --- */}
+                            {/* --- SELECTS) --- */}
 
                             <TextField
                                 select
@@ -377,7 +395,6 @@ export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose,
                         startIcon={<SaveIcon />}
                         variant="contained"
                         color="primary"
-                        // Deshabilita si está cargando (submit) O si las listas están cargando
                         disabled={listIsLoading}
                     >
                         {listIsLoading ? (isEditing ? 'Guardando...' : 'Creando...') : 'Guardar'}

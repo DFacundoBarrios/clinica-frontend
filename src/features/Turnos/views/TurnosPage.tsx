@@ -30,7 +30,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
-//para el backend
+// backend
 import { useApi } from 'src/hooks/useApi';
 import { apiService } from 'src/services/api';
 import type { Appointment, UpdateAppointment } from 'src/types';
@@ -47,7 +47,7 @@ export default function TurnosPage() {
         execute: fetchTurnos
     } = useApi<Appointment[]>(apiService.getAppointments);
 
-    // --- Estados para Modales ---
+    //Estados para Modales
     const [openDialog, setOpenDialog] = useState(false); // Modal de Formulario (Crear/Editar)
     const [turnoToEdit, setTurnoToEdit] = useState<Appointment | null>(null);
     const [turnoToDelete, setTurnoToDelete] = useState<Appointment | null>(null);
@@ -55,7 +55,6 @@ export default function TurnosPage() {
 
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
     const [turnoToShow, setTurnoToShow] = useState<Appointment | null>(null);
-    // --- FIN NUEVO ---
 
     const [alertMessage, setAlertMessage] = useState<{ tipo: 'success' | 'error', texto: string } | null>(null);
 
@@ -67,7 +66,7 @@ export default function TurnosPage() {
     }, [errorList]);
 
 
-    // Manejadores de Modal (Crear/Editar)
+    // Manejadores de Modal
     const handleOpenCreate = () => {
         setTurnoToEdit(null);
         setOpenDialog(true);
@@ -83,24 +82,23 @@ export default function TurnosPage() {
         setTurnoToEdit(null);
     };
 
-    // --- NUEVO: Handlers para Modal de Detalles ---
+    //Handlers para Modal de Detalles 
     const handleOpenDetailModal = (turno: Appointment) => {
-        setTurnoToShow(turno); // Guarda el turno a mostrar
+        setTurnoToShow(turno); // Guarda el turno 
         setIsDetailModalOpen(true); // Abre el modal de detalles
     };
 
     const handleCloseDetailModal = () => {
         setIsDetailModalOpen(false);
-        setTurnoToShow(null); // Limpia al cerrar
+        setTurnoToShow(null); 
     };
-    // --- FIN NUEVO ---
 
     const handleSuccess = (message: string) => {
         setAlertMessage({ tipo: 'success', texto: message });
         fetchTurnos();
     };
 
-    // Manejadores de Eliminación (Cancelación)
+    // Manejadores de Eliminación 
     const handleConfirmCancel = async () => {
         if (!turnoToCancel) return;
 
@@ -186,7 +184,6 @@ export default function TurnosPage() {
                 </Button>
             </Box>
 
-            {/* Mensaje de Alerta  */}
             {alertMessage && (
                 <Alert
                     severity={alertMessage.tipo}
@@ -256,7 +253,7 @@ export default function TurnosPage() {
                                         </TableCell>
                                         <TableCell align="center">
 
-                                            {/* --- NUEVO: Botón Ver Detalles --- */}
+                                            {/*Botón Ver Detalles --- */}
                                             <IconButton
                                                 color="default"
                                                 size="small"
@@ -285,30 +282,6 @@ export default function TurnosPage() {
                                             <IconButton color="error" size="small" aria-label="eliminar" onClick={() => setTurnoToDelete(turno)} >
                                                 <DeleteOutlineOutlinedIcon />
                                             </IconButton>
-
-                                            <Dialog
-                                                open={!!turnoToDelete}
-                                                onClose={() => setTurnoToDelete(null)}
-                                                maxWidth="xs"
-                                            >
-                                                {/* ... (Contenido del diálogo sin cambios) ... */}
-                                                <DialogTitle sx={{ color: 'error.main' }}>CONFIRMAR ELIMINACION</DialogTitle>
-                                                <DialogContent dividers>
-                                                    <Typography>
-                                                        ¿Estás seguro de que deseas eliminar el turno?
-                                                        *{turnoToDelete?.id_appointment} {turnoToDelete?.date}?*
-                                                        Esta acción es irreversible.
-                                                    </Typography>
-                                                </DialogContent>
-                                                <DialogActions>
-                                                    <Button onClick={() => setTurnoToDelete(null)} startIcon={<CancelIcon />}>
-                                                        Cancelar
-                                                    </Button>
-                                                    <Button onClick={handleConfirmDelete} color="error" variant="contained" startIcon={<DeleteOutlineOutlinedIcon />} autoFocus>
-                                                        Eliminar
-                                                    </Button>
-                                                </DialogActions>
-                                            </Dialog>
                                         </TableCell>
                                     </TableRow>
                                 ))
@@ -324,9 +297,10 @@ export default function TurnosPage() {
                 onClose={handleCloseDialog}
                 turnoInicial={turnoToEdit}
                 onSuccess={handleSuccess}
+                turnos={turnos ?? []}
             />
 
-            {/* --- NUEVO: Modal de Detalles  --- */}
+            {/* ---Modal de Detalles  --- */}
             <Dialog
                 open={isDetailModalOpen}
                 onClose={handleCloseDetailModal}
@@ -408,6 +382,28 @@ export default function TurnosPage() {
                     </Button>
                     <Button onClick={handleConfirmCancel} color="error" variant="contained" startIcon={<DeleteOutlineOutlinedIcon />} autoFocus>
                         Sí, Cancelar Turno
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog
+                open={!!turnoToDelete}
+                onClose={() => setTurnoToDelete(null)}
+                maxWidth="xs"
+            >
+                {/* ... (El resto de tu contenido del diálogo) ... */}
+                <DialogTitle sx={{ color: 'error.main' }}>CONFIRMAR ELIMINACION</DialogTitle>
+                <DialogContent dividers>
+                    <Typography>
+                        ¿Estás seguro de que deseas eliminar el turno?
+                        Esta acción es irreversible.
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setTurnoToDelete(null)} startIcon={<CancelIcon />}>
+                        Cancelar
+                    </Button>
+                    <Button onClick={handleConfirmDelete} color="error" variant="contained" startIcon={<DeleteOutlineOutlinedIcon />} autoFocus>
+                        Eliminar
                     </Button>
                 </DialogActions>
             </Dialog>

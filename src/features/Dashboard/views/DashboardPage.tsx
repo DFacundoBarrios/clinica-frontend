@@ -172,7 +172,6 @@ const DashboardPage: React.FC = () => {
         }
     }
 
-    //Componentes para renderizar el contenido del modal ---
 
     // Renderizador para listas de Turnos
     const TurnosListRenderer = ({ turnos }: { turnos: Appointment[] }) => (
@@ -207,7 +206,7 @@ const DashboardPage: React.FC = () => {
         </List>
     );
 
-    // --- 💡 6. Handlers para abrir el modal de información ---
+    // Handlers para abrir el modal de información ---
 
     const handleOpenTurnosHoy = () => {
         setModalInfo({

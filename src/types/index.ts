@@ -26,7 +26,10 @@ export interface Doctor {
   start_time: string;
   end_time: string;
   medical_specialty?: MedicalSpecialty[];
-  appointments?: Appointment[];
+  // Ajustamos el tipo para el reporte de médicos.
+  // El backend devuelve los turnos, pero sin el objeto 'patient' completo.
+  // En su lugar, tenemos el ID del paciente.
+  appointments?: (Omit<Appointment, 'patient'> & { patientIdPatient?: number })[];
   medical_office?: MedicalOffice;
 }
 
@@ -49,6 +52,7 @@ export interface Appointment {
   observations?: string;
   state?: AppointmentState;
   patient?: Patient;
+  patientIdPatient?: number; // Esta es la propiedad correcta que contiene el ID
   doctor?: Doctor;
   medical_office?: MedicalOffice;
 }
@@ -108,4 +112,13 @@ export interface AppointmentFilters {
   doctorId?: number;
   patientId?: number;
   state?: AppointmentState;
+}
+
+// Para el historial de reportes
+export interface AppointmentReport {
+    id_appointment: number;
+    date: string;
+    hour: string;
+    patient: { name: string; lastname: string; };
+    doctor: { name: string; lastname: string; };
 }

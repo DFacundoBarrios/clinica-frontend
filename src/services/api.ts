@@ -10,6 +10,7 @@ import type {
   CreateAppointment,
   UpdatePatient,
   UpdateAppointment,
+  AppointmentReport,
 } from '../types';
 
 
@@ -33,11 +34,11 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
   (response) => {
-    console.log(`✅ ${response.config.method?.toUpperCase()} ${response.config.url}`);
+    console.log(` ${response.config.method?.toUpperCase()} ${response.config.url}`);
     return response;
   },
   (error) => {
-    console.error('❌ Error en la API:', error.response?.data || error.message);
+    console.error('Error en la API:', error.response?.data || error.message);
     return Promise.reject(error);
   }
 );
@@ -95,6 +96,13 @@ export const apiService = {
 
   getMedicalOffice: (number: number): Promise<AxiosResponse<MedicalOffice>> =>
     api.get<MedicalOffice>(`/medical-office/${number}`),
-};
+
+  // ============ REPORTES ================
+  getAppointmentsReport: (params: URLSearchParams): Promise<AxiosResponse<AppointmentReport[]>> =>
+    api.get<AppointmentReport[]>('/reports/appointments', { params }),
+  
+  getDoctorsReport: (params: URLSearchParams): Promise<AxiosResponse<Doctor[]>> =>
+    api.get<Doctor[]>('/reports/doctors', { params }),
+}
 
 export default api;

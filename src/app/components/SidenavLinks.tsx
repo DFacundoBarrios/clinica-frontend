@@ -19,13 +19,12 @@ const SidenavLink = ({
   onClick?: () => void;
 }) => {
   const location = useLocation();
-  const selected = location.pathname === to || (to !== "/" && location.pathname.startsWith(to));
   return (
     <ListItemButton
       component={NavLink}
       to={to}
+      end // Esta propiedad le dice a NavLink que solo se active con una coincidencia exacta de la URL.
       onClick={onClick}
-      selected={selected}
       sx={{ borderRadius: 1, mb: 0.5 }}
     >
       <ListItemIcon sx={{ minWidth: 36 }}>{icon}</ListItemIcon>
@@ -46,6 +45,8 @@ export default function SidenavLinks(props: SidenavLinksProps) {
       <SidenavLink to="/turnos" icon={<CalendarMonthOutlinedIcon />} label="AGENDA TURNOS" onClick={props.handleClick} />
       <SidenavLink to="/pacientes" icon={<PeopleAltOutlinedIcon />} label="PACIENTES" onClick={props.handleClick} />
       <SidenavLink to="/medicos" icon={<MedicalServicesOutlinedIcon />} label="MEDICOS" onClick={props.handleClick} />
+      <SidenavLink to="/reportes" icon={<DashboardOutlinedIcon />} label="REPORTES DE TURNOS" onClick={props.handleClick} />
+      <SidenavLink to="/reportes/medicos" icon={<DashboardOutlinedIcon />} label="REPORTES DE MEDICOS" onClick={props.handleClick} />
     </>
   )
 }

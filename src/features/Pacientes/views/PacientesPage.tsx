@@ -146,7 +146,6 @@ export default function PacientesPage() {
                 <TableContainer>
                     <Table sx={{ minWidth: 700 }} aria-label="tabla de pacientes">
                         <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
-                            {/* ... (Cabecera de la tabla sin cambios) ... */}
                             <TableRow>
                                 <TableCell sx={{ fontWeight: 'bold' }}>ID</TableCell>
                                 <TableCell sx={{ fontWeight: 'bold' }}>Nombre</TableCell>

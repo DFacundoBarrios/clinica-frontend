@@ -33,10 +33,13 @@ const ReportesMedicosPage: React.FC = () => {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
 
+    const [allDoctors, setAllDoctors] = useState<Doctor[]>([]);
+    const [selectedDoctorId, setSelectedDoctorId] = useState<string>('');
     const [doctorsWithAppointments, setDoctorsWithAppointments] = useState<Doctor[]>([]);
     const [allPatients, setAllPatients] = useState<Patient[]>([]); // <-- 1. Estado para guardar todos los pacientes
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [hasSearched, setHasSearched] = useState(false); // Nuevo estado
 
     const fetchDoctorsReport = useCallback(async () => {
         setLoading(true);
@@ -57,18 +60,28 @@ const ReportesMedicosPage: React.FC = () => {
 
             params.append('startDate', startDate);
             params.append('endDate', adjustedEndDate);
+            if (selectedDoctorId) {
+                params.append('doctorId', selectedDoctorId);
+            }
         }
 
         try {
             const response = await apiService.getDoctorsReport(params);
-            setDoctorsWithAppointments(response.data);
+            let doctorsData = response.data;
+
+            // Filtro adicional en el frontend por si el backend no filtra por doctorId
+            if (filterType === 'custom' && selectedDoctorId) {
+                doctorsData = doctorsData.filter((doc: Doctor) => doc.id_doctor === parseInt(selectedDoctorId, 10));
+            }
+
+            setDoctorsWithAppointments(doctorsData);
         } catch (err: any) {
             setError(err.response?.data?.message || err.message || 'Error al obtener el reporte de médicos.');
             setDoctorsWithAppointments([]);
         } finally {
             setLoading(false);
         }
-    }, [filterType, startDate, endDate]);
+    }, [filterType, startDate, endDate, selectedDoctorId]);
 
     useEffect(() => {
         // <-- 2. Cargar la lista de pacientes al montar el componente
@@ -82,12 +95,23 @@ const ReportesMedicosPage: React.FC = () => {
             }
         };
 
+        const fetchAllDoctors = async () => {
+            try {
+                const response = await apiService.getDoctors();
+                setAllDoctors(response.data);
+            } catch (err) {
+                console.error("Error al cargar la lista de médicos:", err);
+                setError('No se pudo cargar la lista de médicos para el filtro.');
+            }
+        };
+
         fetchAllPatients();
-        fetchDoctorsReport();
-    }, [fetchDoctorsReport]);
+        fetchAllDoctors();
+    }, []); // <-- Se ejecuta solo una vez al montar el componente
 
     const handleGenerateReport = (e: React.FormEvent) => {
         e.preventDefault();
+        setHasSearched(true); // Marcamos que se ha realizado una búsqueda
         fetchDoctorsReport();
     };
 
@@ -147,6 +171,33 @@ const ReportesMedicosPage: React.FC = () => {
                         <>
                             <TextField label="Fecha de Inicio" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} InputLabelProps={{ shrink: true }} sx={{ minWidth: 200 }} />
                             <TextField label="Fecha de Fin" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} InputLabelProps={{ shrink: true }} sx={{ minWidth: 200 }} />
+                            <FormControl sx={{ minWidth: 220 }}>
+                                <InputLabel id="doctor-select-label">Médico (Opcional)</InputLabel>
+                                <Select
+                                    labelId="doctor-select-label"
+                                    id="doctor-select"
+                                    value={selectedDoctorId}
+                                    label="Médico (Opcional)"
+                                    onChange={(e: SelectChangeEvent) => setSelectedDoctorId(e.target.value)}
+                                    MenuProps={{
+                                        PaperProps: {
+                                            sx: {
+                                                boxShadow: '0px 5px 5px -3px rgba(0,0,0,0.2), 0px 8px 10px 1px rgba(0,0,0,0.14), 0px 3px 14px 2px rgba(0,0,0,0.12)',
+                                                border: (theme) => `1px solid ${theme.palette.divider}`,
+                                            },
+                                        },
+                                    }}
+                                >
+                                    <MenuItem value="">
+                                        <em>Todos los médicos</em>
+                                    </MenuItem>
+                                    {allDoctors.map((doctor) => (
+                                        <MenuItem key={doctor.id_doctor} value={doctor.id_doctor}>
+                                            {`Dr. ${doctor.name} ${doctor.lastname}`}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
                         </>
                     )}
 
@@ -164,7 +215,7 @@ const ReportesMedicosPage: React.FC = () => {
                 <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}><CircularProgress /></Box>
             ) : (
                 <Paper elevation={3} sx={{ overflow: 'hidden' }}>
-                    {doctorsWithAppointments.length > 0 ? (
+                    {hasSearched && doctorsWithAppointments.length > 0 ? (
                         doctorsWithAppointments.map((doctor) => (
                             <Accordion key={doctor.id_doctor} disableGutters elevation={0} sx={{ '&:before': { display: 'none' } }}>
                                 <AccordionSummary 
@@ -206,8 +257,10 @@ const ReportesMedicosPage: React.FC = () => {
                                 </AccordionDetails>
                             </Accordion>
                         ))
-                    ) : (
+                    ) : hasSearched ? (
                         <Alert severity="info" sx={{ m: 2 }}>No se encontraron médicos con actividad en el período seleccionado.</Alert>
+                    ) : (
+                        <Alert severity="info" sx={{ m: 2 }}>Seleccione un filtro y genere un reporte para ver los resultados.</Alert>
                     )}
                 </Paper>
             )}

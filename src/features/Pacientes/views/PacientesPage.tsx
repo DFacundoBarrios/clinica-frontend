@@ -29,7 +29,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import { useApi } from 'src/hooks/useApi';
 import { apiService } from 'src/services/api';
 import { PacienteFormDialog } from './PacienteFormDialog';
-import type {  Patient } from 'src/types';
+import type { Patient } from 'src/types';
 
 
 export default function PacientesPage() {
@@ -39,7 +39,6 @@ export default function PacientesPage() {
         loading: isLoadingList,
         error: errorList,
         execute: fetchPacientes,
-        setData: setPacientes    
     } = useApi<Patient[]>(apiService.getPatients);
 
     // Estados que el componente sigue manejando
@@ -71,10 +70,10 @@ export default function PacientesPage() {
         setPacienteToEdit(null);
     };
 
-    // 💡 4. 'handleSuccess' ahora llama a 'fetchPacientes' (que es el 'execute' del hook)
+    // llama a 'fetchPacientes'
     const handleSuccess = (message: string) => {
         setAlertMessage({ tipo: 'success', texto: message });
-        fetchPacientes(); // 💡 Refresca la lista volviendo a ejecutar la API call
+        fetchPacientes(); 
     };
 
     // Manejadores de Eliminación
@@ -82,7 +81,7 @@ export default function PacientesPage() {
         if (!pacienteToDelete) return;
 
         try {
-            // 💡 5. Usamos 'apiService' directamente (basado en el plan de refactor)
+            //Usamos 'apiService' directamente
             await apiService.deletePatient(pacienteToDelete.id_patient);
             handleSuccess(`Paciente ${pacienteToDelete.name} ${pacienteToDelete.lastname} eliminado con éxito.`);
 
@@ -107,15 +106,14 @@ export default function PacientesPage() {
     return (
         <Box sx={{ p: 3 }}>
 
-            {/* Título y Botón (sin cambios) */}
-            <Box sx={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center', 
-                    mb: 3,
-                    pb: 1,
-                    borderBottom: '1px solid #e0e0e0' 
-                }}>
+            <Box sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                mb: 3,
+                pb: 1,
+                borderBottom: '1px solid #e0e0e0'
+            }}>
                 <Typography variant="h4" component="h1" color="primary" sx={{ fontWeight: 'bold' }}>
                     AGENDA DE PACIENTES 🧑‍⚕️
                 </Typography>
@@ -124,13 +122,12 @@ export default function PacientesPage() {
                     variant="contained" color="primary" size="large"
                     startIcon={<AddIcon />}
                     onClick={handleOpenCreate}
-                    disabled={isLoadingList} 
+                    disabled={isLoadingList}
                 >
-                   NUEVO PACIENTE
+                    NUEVO PACIENTE
                 </Button>
             </Box>
 
-            {/* Mensaje de Alerta (sin cambios) */}
             {alertMessage && (
                 <Alert
                     severity={alertMessage.tipo}
@@ -141,7 +138,6 @@ export default function PacientesPage() {
                 </Alert>
             )}
 
-            {/* Lista/Tabla de Pacientes */}
             <Paper elevation={3}>
                 <TableContainer>
                     <Table sx={{ minWidth: 700 }} aria-label="tabla de pacientes">
@@ -157,7 +153,7 @@ export default function PacientesPage() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {/* 💡 6. Lógica de renderizado actualizada */}
+
                             {isLoadingList ? (
                                 <TableRow>
                                     <TableCell colSpan={7} align="center">
@@ -165,14 +161,14 @@ export default function PacientesPage() {
                                         Cargando pacientes...
                                     </TableCell>
                                 </TableRow>
-                            ) : !pacientes || pacientes.length === 0 ? ( // 💡 Comprueba 'null' o 'length 0'
+                            ) : !pacientes || pacientes.length === 0 ? ( 
                                 <TableRow>
                                     <TableCell colSpan={7} align="center">
                                         No hay pacientes registrados.
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                // 💡 Usamos (pacientes ?? []) por si acaso, aunque 'data' debería ser array
+                                
                                 (pacientes ?? []).map((paciente) => (
                                     <TableRow key={paciente.id_patient} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                         <TableCell component="th" scope="row">{paciente.id_patient}</TableCell>
@@ -197,7 +193,7 @@ export default function PacientesPage() {
                 </TableContainer>
             </Paper>
 
-            {/* Modal de Creación/Edición (sin cambios) */}
+            {/* Modal de Creación/Edición*/}
             <PacienteFormDialog
                 open={openDialog}
                 onClose={handleCloseDialog}
@@ -205,13 +201,12 @@ export default function PacientesPage() {
                 onSuccess={handleSuccess}
             />
 
-            {/* Diálogo de Confirmación de Eliminación (sin cambios) */}
+            {/* Diálogo de Confirmación de Eliminación*/}
             <Dialog
                 open={!!pacienteToDelete}
                 onClose={() => setPacienteToDelete(null)}
                 maxWidth="xs"
             >
-                {/* ... (Contenido del diálogo sin cambios) ... */}
                 <DialogTitle sx={{ color: 'error.main' }}>Confirmar Eliminación</DialogTitle>
                 <DialogContent dividers>
                     <Typography>

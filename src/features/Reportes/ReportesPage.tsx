@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
     Box,
     Typography,
@@ -34,6 +34,7 @@ const ReportesPage: React.FC = () => {
     const [appointments, setAppointments] = useState<AppointmentReport[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [hasSearched, setHasSearched] = useState(false);
 
     // Función para obtener los datos del backend
     const fetchAppointmentsReport = useCallback(async () => {
@@ -72,16 +73,11 @@ const ReportesPage: React.FC = () => {
             setLoading(false);
         }
     }, [filterType, startDate, endDate]);
-    
-
-
-    useEffect(() => {
-        fetchAppointmentsReport();
-    }, [fetchAppointmentsReport]);
 
 
     const handleGenerateReport = (e: React.FormEvent) => {
         e.preventDefault();
+        setHasSearched(true);
         fetchAppointmentsReport();
     };
 
@@ -170,7 +166,7 @@ const ReportesPage: React.FC = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {appointments.length > 0 ? (
+                            {hasSearched && appointments.length > 0 ? (
                                 appointments.map(app => (
                                     <TableRow key={app.id_appointment}>
                                         <TableCell>{new Date(app.date).toLocaleDateString()}</TableCell>
@@ -179,10 +175,10 @@ const ReportesPage: React.FC = () => {
                                         <TableCell>{`${app.doctor.name} ${app.doctor.lastname}`}</TableCell>
                                     </TableRow>
                                 ))
+                            ) : hasSearched ? (
+                                <TableRow><TableCell colSpan={4} align="center">No se encontraron turnos para el filtro seleccionado.</TableCell></TableRow>
                             ) : (
-                                <TableRow>
-                                    <TableCell colSpan={4} align="center">No se encontraron turnos para el filtro seleccionado.</TableCell>
-                                </TableRow>
+                                <TableRow><TableCell colSpan={4} align="center">Seleccione un filtro y genere un reporte para ver los resultados.</TableCell></TableRow>
                             )}
                         </TableBody>
                     </Table>

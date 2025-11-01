@@ -48,6 +48,16 @@ export interface TurnoFormDialogProps {
 
 export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose, turnoInicial, onSuccess, turnos }) => {
 
+    const timeSlots = useMemo(() => {
+        const slots: string[] = [];
+        // Generar horarios desde las 08:00 hasta las 19:30
+        for (let hour = 8; hour < 20; hour++) {
+            slots.push(`${hour.toString().padStart(2, '0')}:00`);
+            slots.push(`${hour.toString().padStart(2, '0')}:30`);
+        }
+        return slots;
+    }, []);
+
     const initialFormState = useMemo((): TurnoFormState => {
         if (turnoInicial) {
             const { date, observations, state, patient, doctor, medical_office } = turnoInicial;
@@ -270,7 +280,6 @@ export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose,
                 <DialogContent dividers sx={{ pt: 2 }}>
                     {/* Alertas de Errores */}
                     {listError && <Alert severity="error" sx={{ mb: 2 }}>{listError}</Alert>}
-                    {listError && <Alert severity="warning" sx={{ mb: 2 }}>{listError}</Alert>}
 
                     {/* Muestra un spinner si las listas están cargando */}
                     {listIsLoading ? (
@@ -349,14 +358,20 @@ export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose,
                                 onChange={handleOnChange}
                                 variant="outlined" InputLabelProps={{ shrink: true }}
                                 disabled={listIsLoading}
+                                
                             />
-                            <TextField
-                                fullWidth required label="Hora" name="hour" type="time"
+                             <TextField
+                                select
+                                fullWidth required label="Hora" name="hour"
                                 value={form.hour}
                                 onChange={handleOnChange}
                                 variant="outlined" InputLabelProps={{ shrink: true }}
                                 disabled={listIsLoading}
-                            />
+                            >
+                                {timeSlots.map(time => (
+                                    <MenuItem key={time} value={time}>{time}</MenuItem>
+                                ))}
+                            </TextField>
 
                             {/* --- Selector de Estado (solo en modo edición) --- */}
                             {isEditing && (

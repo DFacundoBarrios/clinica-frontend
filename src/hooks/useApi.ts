@@ -13,9 +13,9 @@ export const useApi = <T,>(
   apiFunction: (...params: unknown[]) => Promise<AxiosResponse<T>>,
   autoLoad: boolean = true
 ): UseApiResult<T> => {
-  const [data, setData] = useState<T | null>(null);
-  const [loading, setLoading] = useState<boolean>(autoLoad);
-  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState<T | null>(null); 
+  const [loading, setLoading] = useState<boolean>(autoLoad); //estado de carga
+  const [error, setError] = useState<string | null>(null); //estado de error
 
   //callback actualizado
   const execute = useCallback(async (...params: unknown[]): Promise<T | undefined> => {
@@ -38,6 +38,7 @@ export const useApi = <T,>(
     }
   }, [apiFunction]); 
 
+  //se ejecuta automaticamente si es true
   useEffect(() => {
     if (autoLoad) {
       void execute();

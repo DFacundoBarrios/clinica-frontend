@@ -6,32 +6,32 @@ const theme = createTheme({
     palette: {
         mode: 'light',
         primary: {
-            main: '#00695c', // Un verde azulado (teal) oscuro para confianza
+            main: '#00695c', 
             light: '#439889',
             dark: '#003d33',
         },
         secondary: {
-            main: '#0277bd', // Un azul sereno
+            main: '#0277bd', 
             light: '#58a5f0',
             dark: '#004c8c',
         },
         background: {
-            default: '#f4f6f8', // Un gris muy claro para el fondo
-            paper: '#ffffff', // Blanco puro para las tarjetas y modales
+            default: '#f4f6f8', //  fondo
+            paper: '#ffffff', //  para las tarjetas y modales
         },
         text: {
-            primary: '#1c1c1c', // Negro suave
-            secondary: '#5a5a5a', // Gris para texto secundario
+            primary: '#1c1c1c', 
+            secondary: '#5a5a5a', // texto secundario
         },
         success: {
-            main: '#2e7d32', // Verde para éxito
+            main: '#2e7d32', 
         },
         warning: {
-            main: '#ed6c02', // Naranja para advertencias
+            main: '#ed6c02', 
         }
     },
 
-    // Typography
+//estilo de letras
     typography: {
         fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
         h4: {
@@ -49,17 +49,17 @@ const theme = createTheme({
         }
     },
 
-    // ✨ Estilos globales para componentes
+
     components: {
-        // Aplicar un estilo "plano" y moderno a todas las tarjetas/papeles
+
         MuiPaper: {
             defaultProps: {
                 elevation: 0, // Sin sombras por defecto
-                variant: 'outlined', // Usar un borde sutil
+                variant: 'outlined', 
             },
             styleOverrides: {
                 root: {
-                    borderRadius: 8, // Bordes redondeados consistentes
+                    borderRadius: 8, 
                 },
             }
         },
@@ -74,23 +74,23 @@ const theme = createTheme({
                 },
             }
         },
-        // Estilo de la barra superior
+        // barra superior
         MuiAppBar: {
             defaultProps: {
-                elevation: 0, // Quitar sombra de la barra
+                elevation: 0, // Quitar sombra 
                 color: 'inherit',
             },
             styleOverrides: {
                 root: {
-                    backgroundColor: '#ffffff', // Fondo blanco para la barra superior
-                    borderBottom: '1px solid #e0e0e0', // Borde sutil
+                    backgroundColor: '#ffffff', //barra superior
+                    borderBottom: '1px solid #e0e0e0', 
                 }
             }
         },
         // Botones
         MuiButton: {
             defaultProps: {
-                disableElevation: true, // Botones planos
+                disableElevation: true, 
             },
             styleOverrides: {
                 root: {
@@ -99,7 +99,7 @@ const theme = createTheme({
                     fontWeight: 600,
                 },
                 containedPrimary: {
-                    color: '#ffffff', // Texto blanco en botones primarios
+                    color: '#ffffff', // botones primarios
                 }
             }
         },
@@ -133,6 +133,6 @@ const theme = createTheme({
             }
         }
     }
-}, esES); // 💡 Aplicar el idioma español (para fechas, paginación, etc.)
+}, esES); 
 
 export default theme;

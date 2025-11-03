@@ -25,7 +25,7 @@ import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined
 import AddIcon from '@mui/icons-material/Add';
 import CancelIcon from '@mui/icons-material/Cancel';
 
-//para conectar con backend
+// datos back
 import { useApi } from 'src/hooks/useApi';
 import { apiService } from 'src/services/api';
 import { PacienteFormDialog } from './PacienteFormDialog';
@@ -41,7 +41,7 @@ export default function PacientesPage() {
         execute: fetchPacientes,
     } = useApi<Patient[]>(apiService.getPatients);
 
-    // Estados que el componente sigue manejando
+    // Estados del componente 
     const [openDialog, setOpenDialog] = useState(false);
     const [pacienteToEdit, setPacienteToEdit] = useState<Patient | null>(null);
     const [pacienteToDelete, setPacienteToDelete] = useState<Patient | null>(null);
@@ -54,7 +54,7 @@ export default function PacientesPage() {
     }, [errorList]);
 
 
-    // Manejadores de Modal (sin cambios)
+    // Manejadores de Modal
     const handleOpenCreate = () => {
         setPacienteToEdit(null);
         setOpenDialog(true);
@@ -70,18 +70,17 @@ export default function PacientesPage() {
         setPacienteToEdit(null);
     };
 
-    // llama a 'fetchPacientes'
+
     const handleSuccess = (message: string) => {
         setAlertMessage({ tipo: 'success', texto: message });
-        fetchPacientes(); 
+        fetchPacientes();
     };
 
-    // Manejadores de Eliminación
+    // manejo de eliminaciones
     const handleConfirmDelete = async () => {
         if (!pacienteToDelete) return;
 
         try {
-            //Usamos 'apiService' directamente
             await apiService.deletePatient(pacienteToDelete.id_patient);
             handleSuccess(`Paciente ${pacienteToDelete.name} ${pacienteToDelete.lastname} eliminado con éxito.`);
 
@@ -161,14 +160,14 @@ export default function PacientesPage() {
                                         Cargando pacientes...
                                     </TableCell>
                                 </TableRow>
-                            ) : !pacientes || pacientes.length === 0 ? ( 
+                            ) : !pacientes || pacientes.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={7} align="center">
                                         No hay pacientes registrados.
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                
+
                                 (pacientes ?? []).map((paciente) => (
                                     <TableRow key={paciente.id_patient} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                         <TableCell component="th" scope="row">{paciente.id_patient}</TableCell>
@@ -193,7 +192,7 @@ export default function PacientesPage() {
                 </TableContainer>
             </Paper>
 
-            {/* Modal de Creación/Edición*/}
+            {/* Modal*/}
             <PacienteFormDialog
                 open={openDialog}
                 onClose={handleCloseDialog}
@@ -201,7 +200,6 @@ export default function PacientesPage() {
                 onSuccess={handleSuccess}
             />
 
-            {/* Diálogo de Confirmación de Eliminación*/}
             <Dialog
                 open={!!pacienteToDelete}
                 onClose={() => setPacienteToDelete(null)}

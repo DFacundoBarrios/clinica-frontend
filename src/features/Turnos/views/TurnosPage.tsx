@@ -85,12 +85,12 @@ export default function TurnosPage() {
     //Handlers para Modal de Detalles 
     const handleOpenDetailModal = (turno: Appointment) => {
         setTurnoToShow(turno); // Guarda el turno 
-        setIsDetailModalOpen(true); // Abre el modal de detalles
+        setIsDetailModalOpen(true);
     };
 
     const handleCloseDetailModal = () => {
         setIsDetailModalOpen(false);
-        setTurnoToShow(null); 
+        setTurnoToShow(null);
     };
 
     const handleSuccess = (message: string) => {
@@ -98,7 +98,7 @@ export default function TurnosPage() {
         fetchTurnos();
     };
 
-    // Manejadores de Eliminación 
+    // Manejadores de cancelacion de turno 
     const handleConfirmCancel = async () => {
         if (!turnoToCancel) return;
 
@@ -117,6 +117,7 @@ export default function TurnosPage() {
         }
     };
 
+    //Manejador de eliminacion de turno
     const handleConfirmDelete = async () => {
         if (!turnoToDelete) return;
 
@@ -194,12 +195,11 @@ export default function TurnosPage() {
                 </Alert>
             )}
 
-            {/* Indicador de carga */}
+
             {isLoadingList && (
                 <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}><CircularProgress /></Box>
             )}
 
-            {/* Lista/Tabla de Turnos */}
             <Paper elevation={3}>
                 <TableContainer>
                     <Table sx={{ minWidth: 800 }} aria-label="tabla de turnos">
@@ -253,7 +253,7 @@ export default function TurnosPage() {
                                         </TableCell>
                                         <TableCell align="center">
 
-                                            {/*Botón Ver Detalles --- */}
+
                                             <IconButton
                                                 color="default"
                                                 size="small"
@@ -291,7 +291,7 @@ export default function TurnosPage() {
                 </TableContainer>
             </Paper>
 
-            {/* Modal de Creación/Edición */}
+            {/* Modal */}
             <TurnoFormDialog
                 open={openDialog}
                 onClose={handleCloseDialog}
@@ -300,7 +300,7 @@ export default function TurnosPage() {
                 turnos={turnos ?? []}
             />
 
-            {/* ---Modal de Detalles  --- */}
+
             <Dialog
                 open={isDetailModalOpen}
                 onClose={handleCloseDetailModal}
@@ -390,7 +390,7 @@ export default function TurnosPage() {
                 onClose={() => setTurnoToDelete(null)}
                 maxWidth="xs"
             >
-                {/* ... (El resto de tu contenido del diálogo) ... */}
+
                 <DialogTitle sx={{ color: 'error.main' }}>CONFIRMAR ELIMINACION</DialogTitle>
                 <DialogContent dividers>
                     <Typography>

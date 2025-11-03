@@ -23,9 +23,11 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
+//datos back
 import { apiService } from 'src/services/api';
 import type { Doctor, Patient } from 'src/types';
 
+//filtro por semana, mes, año y personalizado para turnos
 type AppointmentFilterType = 'week' | 'month' | 'year' | 'custom';
 
 const ReportesMedicosPage: React.FC = () => {
@@ -36,7 +38,7 @@ const ReportesMedicosPage: React.FC = () => {
     const [allDoctors, setAllDoctors] = useState<Doctor[]>([]);
     const [selectedDoctorId, setSelectedDoctorId] = useState<string>('');
     const [doctorsWithAppointments, setDoctorsWithAppointments] = useState<Doctor[]>([]);
-    const [allPatients, setAllPatients] = useState<Patient[]>([]); // <-- 1. Estado para guardar todos los pacientes
+    const [allPatients, setAllPatients] = useState<Patient[]>([]); //Estado para guardar todos los pacientes
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [hasSearched, setHasSearched] = useState(false); // Nuevo estado
@@ -84,17 +86,18 @@ const ReportesMedicosPage: React.FC = () => {
     }, [filterType, startDate, endDate, selectedDoctorId]);
 
     useEffect(() => {
-        // <-- 2. Cargar la lista de pacientes al montar el componente
+        //Carga la lista de pacientes
         const fetchAllPatients = async () => {
             try {
                 const response = await apiService.getPatients();
                 setAllPatients(response.data);
             } catch (err) {
                 console.error("Error al cargar la lista de pacientes:", err);
-                // No bloqueamos la UI, el reporte puede funcionar mostrando solo IDs.
+
             }
         };
 
+        //Carga la lista de medicos
         const fetchAllDoctors = async () => {
             try {
                 const response = await apiService.getDoctors();
@@ -107,7 +110,7 @@ const ReportesMedicosPage: React.FC = () => {
 
         fetchAllPatients();
         fetchAllDoctors();
-    }, []); // <-- Se ejecuta solo una vez al montar el componente
+    }, []); //Se ejecuta solo una vez
 
     const handleGenerateReport = (e: React.FormEvent) => {
         e.preventDefault();
@@ -115,9 +118,9 @@ const ReportesMedicosPage: React.FC = () => {
         fetchDoctorsReport();
     };
 
-    // <-- 3. Función para encontrar el nombre del paciente por su ID
+    //encontrar el nombre del paciente por id
     const getPatientDisplayInfo = (appointment: any): string => {
-        // El backend devuelve el ID del paciente dentro de un objeto 'patient' parcial.
+
         const patientId = appointment.patient?.id_patient;
 
         if (!patientId) return 'N/A';
@@ -130,12 +133,12 @@ const ReportesMedicosPage: React.FC = () => {
     };
 
     return (
-        <Box sx={{ 
-            justifyContent: 'space-between', 
-            alignItems: 'center', 
+        <Box sx={{
+            justifyContent: 'space-between',
+            alignItems: 'center',
             mb: 3,
             pb: 1,
-            borderBottom: '1px solid #e0e0e0' 
+            borderBottom: '1px solid #e0e0e0'
         }}>
             <Typography variant="h4" component="h1" color="primary" sx={{ fontWeight: 'bold' }}>
                 REPORTE DE ACTIVIDAD DE MÉDICOS
@@ -144,28 +147,28 @@ const ReportesMedicosPage: React.FC = () => {
             <Paper sx={{ p: 3, mb: 3 }}>
                 <Box component="form" onSubmit={handleGenerateReport} sx={{ display: 'flex', alignItems: 'flex-end', gap: 2, flexWrap: 'wrap' }}>
                     <FormControl sx={{ minWidth: 200 }}>
-                                            <InputLabel id="filter-type-label">FILTRAR POR</InputLabel>
-                                            <Select
-                                                labelId="filter-type-label"
-                                                id="filter-type-select"
-                                                value={filterType}
-                                                label="Filtrar por"
-                                                onChange={(e: SelectChangeEvent) => setFilterType(e.target.value as AppointmentFilterType)}
-                                                MenuProps={{
-                                                    PaperProps: {
-                                                        sx: {
-                                                            boxShadow: '0px 5px 5px -3px rgba(0,0,0,0.2), 0px 8px 10px 1px rgba(0,0,0,0.14), 0px 3px 14px 2px rgba(0,0,0,0.12)',
-                                                            border: (theme) => `1px solid ${theme.palette.divider}`,
-                                                        },
-                                                    },
-                                                }}
-                                            >
-                                                <MenuItem value="week">ESTA SEMANA</MenuItem>
-                                                <MenuItem value="month">ESTE MES</MenuItem>
-                                                <MenuItem value="year">ESTE AÑO</MenuItem>
-                                                <MenuItem value="custom">RANGO PERSONALIZADO</MenuItem>
-                                            </Select>
-                                        </FormControl>
+                        <InputLabel id="filter-type-label">FILTRAR POR</InputLabel>
+                        <Select
+                            labelId="filter-type-label"
+                            id="filter-type-select"
+                            value={filterType}
+                            label="Filtrar por"
+                            onChange={(e: SelectChangeEvent) => setFilterType(e.target.value as AppointmentFilterType)}
+                            MenuProps={{
+                                PaperProps: {
+                                    sx: {
+                                        boxShadow: '0px 5px 5px -3px rgba(0,0,0,0.2), 0px 8px 10px 1px rgba(0,0,0,0.14), 0px 3px 14px 2px rgba(0,0,0,0.12)',
+                                        border: (theme) => `1px solid ${theme.palette.divider}`,
+                                    },
+                                },
+                            }}
+                        >
+                            <MenuItem value="week">ESTA SEMANA</MenuItem>
+                            <MenuItem value="month">ESTE MES</MenuItem>
+                            <MenuItem value="year">ESTE AÑO</MenuItem>
+                            <MenuItem value="custom">RANGO PERSONALIZADO</MenuItem>
+                        </Select>
+                    </FormControl>
 
                     {filterType === 'custom' && (
                         <>
@@ -218,10 +221,10 @@ const ReportesMedicosPage: React.FC = () => {
                     {hasSearched && doctorsWithAppointments.length > 0 ? (
                         doctorsWithAppointments.map((doctor) => (
                             <Accordion key={doctor.id_doctor} disableGutters elevation={0} sx={{ '&:before': { display: 'none' } }}>
-                                <AccordionSummary 
+                                <AccordionSummary
                                     expandIcon={<ExpandMoreIcon />}
                                     sx={{
-                                        backgroundColor: 'primary.dark', 
+                                        backgroundColor: 'primary.dark',
                                         color: 'white',
                                         borderBottom: (theme) => `1px solid ${theme.palette.divider}`
                                     }}

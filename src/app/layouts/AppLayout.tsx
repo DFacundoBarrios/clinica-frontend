@@ -10,6 +10,7 @@ import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 
 const DRAWER_WIDTH = 280;
 
+//Tema por defecto
 const Main = styled("main")(({ theme }) => ({
   flexGrow: 1,
   padding: theme.spacing(3),
@@ -31,7 +32,7 @@ export default function AppLayout() {
       sx={{
         height: "100%", display: "flex", flexDirection: "column",
         bgcolor: 'primary.dark', // Color de fondo
-        color: 'white', // Color del texto
+        color: 'white',
       }}
     >
       <Box sx={{ p: 2, display: "flex", alignItems: "center", gap: 1 }}>
@@ -46,16 +47,16 @@ export default function AppLayout() {
           component="nav"
           sx={{
             '& .MuiListItemButton-root': {
-              borderRadius: '7px', // Bordes redondeados
-              marginBottom: '4px', // Espacio entre elementos
+              borderRadius: '7px',
+              marginBottom: '4px',
               '&:hover': { // Color para el hover
-                backgroundColor: 'rgba(255, 255, 255, 0.08)', 
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
               },
               // Estilo para el elemento seleccionado
               '&.Mui-selected': {
                 backgroundColor: 'rgba(255, 255, 255, 0.16)',
                 '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.20)', // Un poco más claro al pasar el mouse
+                  backgroundColor: 'rgba(255, 255, 255, 0.20)',
                 }
               },
             },
@@ -75,14 +76,13 @@ export default function AppLayout() {
 
   return (
     <Box sx={{ display: "flex" }}>
-      {/* Barra Superior */}
       <AppBar
         position="fixed"
         sx={{
           zIndex: (t) => t.zIndex.drawer + 1,
           bgcolor: "background.paper",
           color: "text.primary",
-          borderBottom: (theme) => `1px solid ${theme.palette.divider}` 
+          borderBottom: (theme) => `1px solid ${theme.palette.divider}`
         }}
       >
         <Toolbar sx={{ gap: 1 }}>
@@ -96,10 +96,10 @@ export default function AppLayout() {
             noWrap
             component="div"
             sx={{
-              fontWeight: 300, 
-              letterSpacing: '1.5px', 
+              fontWeight: 300,
+              letterSpacing: '1.5px',
               textTransform: 'uppercase',
-              color: 'text.primary' 
+              color: 'text.primary'
             }}
           >
             CLINICA RAFAELA
@@ -118,7 +118,7 @@ export default function AppLayout() {
         </Toolbar>
       </AppBar>
 
-      {/* Menú Lateral */}
+
       <Box component="nav" sx={{ width: { md: DRAWER_WIDTH }, flexShrink: { md: 0 } }}>
         {mdUp ? (
           <Drawer
@@ -143,7 +143,6 @@ export default function AppLayout() {
         )}
       </Box>
 
-      {/* Contenido Principal */}
       <Main>
         <Toolbar />
         <Outlet />

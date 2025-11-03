@@ -19,7 +19,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import { apiService } from 'src/services/api';
 import type { Appointment, CreateAppointment, UpdateAppointment, AppointmentState, Patient, MedicalOffice, Doctor } from 'src/types';
 
-//form
+//form por defecto
 const estadoInicialForm: CreateAppointment = {
     date: '',
     hour: '08:00',
@@ -29,28 +29,27 @@ const estadoInicialForm: CreateAppointment = {
     medicalOfficeNumberOffice: 0,
 };
 
-//Tipo para el estado interno del formulario (incluye 'state' para edición)
+//Tipo para el estado interno del formulario
 type TurnoFormState = CreateAppointment & {
     state?: AppointmentState;
 };
 
-// Props que el componente recibirá
+// Props que el componente va a recibir
 export interface TurnoFormDialogProps {
     open: boolean;
     onClose: () => void;
-    turnoInicial?: Appointment | null; 
+    turnoInicial?: Appointment | null;
     onSuccess: (message: string) => void;
     turnos: Appointment[];
 }
 
 
 //modal de creacion
-
 export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose, turnoInicial, onSuccess, turnos }) => {
 
     const timeSlots = useMemo(() => {
         const slots: string[] = [];
-        // Generar horarios desde las 08:00 hasta las 19:30
+        // Generar horarios desde las 08:00 hasta las 19:30 para que validar que sean de 30 minutos
         for (let hour = 8; hour < 20; hour++) {
             slots.push(`${hour.toString().padStart(2, '0')}:00`);
             slots.push(`${hour.toString().padStart(2, '0')}:30`);
@@ -72,7 +71,7 @@ export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose,
                 const year = d.getFullYear();
                 const month = (d.getMonth() + 1).toString().padStart(2, '0');
                 const day = d.getDate().toString().padStart(2, '0');
-                dateForInput = `${year}-${month}-${day}`; 
+                dateForInput = `${year}-${month}-${day}`;
 
                 const h = d.getHours().toString().padStart(2, '0');
                 const m = d.getMinutes().toString().padStart(2, '0');
@@ -94,7 +93,7 @@ export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose,
         return estadoInicialForm;
     }, [turnoInicial]);
 
-    // Estados internos del formulario
+    //Estados internos del formulario
     const [form, setForm] = useState<TurnoFormState>(initialFormState);
     const [listIsLoading, setListIsLoading] = useState(false);
     const [listError, setListError] = useState<string | null>(null);
@@ -104,17 +103,17 @@ export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose,
     const [doctores, setDoctores] = useState<Doctor[]>([]);
     const [consultorios, setConsultorios] = useState<MedicalOffice[]>([]);
 
-//useeffect
+
     useEffect(() => {
         setForm(initialFormState);
-        setListError(null); // Resetea el error de submit
-        setListError(null); // Resetea el error de carga de listas
+        setListError(null);
+        setListError(null);
 
-        // Función para cargar los datos de los selects
+        // Funcion para cargar los datos de los selects
         const loadDropdownData = async () => {
             setListIsLoading(true);
             try {
-                // Hacemos las llamadas en paralelo para más eficiencia
+                // llamadas en paralelo
                 const [pacientesData, doctoresData, consultoriosData] = await Promise.all([
                     apiService.getPatients(),
                     apiService.getDoctors(),
@@ -133,12 +132,12 @@ export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose,
             }
         };
 
-        // Solo carga los datos si el modal está abierto
+        //Solo carga los datos si el modal está abierto
         if (open) {
             loadDropdownData();
         }
 
-    }, [initialFormState, open]); // Se ejecuta cada vez que 'open' cambia // Resetea también cuando se abre
+    }, [initialFormState, open]); // Se ejecuta cada vez que 'open' cambia
 
     const isEditing = !!turnoInicial;
     const dialogTitle = isEditing ? "EDITAR TURNO EXISTENTE" : "AGENDAR NUEVO TURNO";
@@ -147,12 +146,12 @@ export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose,
     function handleOnChange(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
         const { name, value } = event.target;
 
-        if (listError) setListError(null); // Limpia 
+        if (listError) setListError(null);
 
         const numericFields = ['patientIdPatient', 'doctorIdDoctor', 'medicalOfficeNumberOffice'];
         let finalValue: string | number = value;
 
-        // 1. Convierte el valor a número si es necesario
+        // Convierte el valor a número si es necesario
         if (numericFields.includes(name)) {
             finalValue = value === '' ? 0 : parseInt(value, 10);
             if (isNaN(finalValue)) {
@@ -181,7 +180,7 @@ export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose,
             }));
 
         } else {
-            // Si es cualquier otro campo, actualiza normalmente
+            // Si es cualquier otro campo actualiza 
             setForm(prevFormData => ({
                 ...prevFormData,
                 [name]: finalValue
@@ -189,7 +188,7 @@ export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose,
         }
     }
 
-    // Envío del formulario
+    // Envio del formulario
     async function handleOnSubmit(event: FormEvent) {
         event.preventDefault();
         setListError(null);
@@ -254,7 +253,7 @@ export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose,
                 await apiService.createAppointment(finalCreatePayload);
                 onSuccess(`Turno creado con éxito.`);
             }
-            onClose(); // Cierra el modal solo si fue exitoso
+            onClose(); // Cierra el modal en caso de exitos
         } catch (e) {
             console.error(e);
             const errorMsg = (e as any).response?.data?.message || "Error al guardar el turno. Inténtalo de nuevo.";
@@ -278,10 +277,8 @@ export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose,
             <form onSubmit={handleOnSubmit}>
 
                 <DialogContent dividers sx={{ pt: 2 }}>
-                    {/* Alertas de Errores */}
                     {listError && <Alert severity="error" sx={{ mb: 2 }}>{listError}</Alert>}
 
-                    {/* Muestra un spinner si las listas están cargando */}
                     {listIsLoading ? (
                         <Stack alignItems="center" sx={{ my: 4 }}>
                             <CircularProgress />
@@ -291,7 +288,7 @@ export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose,
                         // Oculta el formulario mientras cargan las listas
                         <Stack spacing={2}>
 
-                            {/* --- SELECTS) --- */}
+                            {/* Select */}
 
                             <TextField
                                 select
@@ -323,7 +320,7 @@ export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose,
                                 variant="outlined"
                                 disabled={listIsLoading}
                             >
-                               
+
                                 {doctores.map((d) => (
                                     <MenuItem key={d.id_doctor} value={d.id_doctor}>
                                         {`${d.name} ${d.lastname}`}
@@ -339,11 +336,11 @@ export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose,
                                 name="medicalOfficeNumberOffice"
                                 label="Nro. Consultorio"
                                 value={form.medicalOfficeNumberOffice || ''}
-                                onChange={handleOnChange} 
+                                onChange={handleOnChange}
                                 variant="outlined"
                                 disabled={true}
                             >
-                                
+
                                 {consultorios.map((c) => (
                                     <MenuItem key={c.number_office} value={c.number_office}>
                                         {`Consultorio ${c.number_office}`}
@@ -351,16 +348,16 @@ export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose,
                                 ))}
                             </TextField>
 
-                            {/* --- Fecha y Hora --- */}
+
                             <TextField
                                 fullWidth required label="Fecha" name="date" type="date"
                                 value={form.date}
                                 onChange={handleOnChange}
                                 variant="outlined" InputLabelProps={{ shrink: true }}
                                 disabled={listIsLoading}
-                                
+
                             />
-                             <TextField
+                            <TextField
                                 select
                                 fullWidth required label="Hora" name="hour"
                                 value={form.hour}
@@ -373,14 +370,14 @@ export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose,
                                 ))}
                             </TextField>
 
-                            {/* --- Selector de Estado (solo en modo edición) --- */}
+
                             {isEditing && (
                                 <TextField
                                     select
                                     fullWidth
                                     label="Estado"
                                     name="state"
-                                    value={form.state ?? ''} // Maneja valor inicial undefined
+                                    value={form.state ?? ''}
                                     onChange={handleOnChange}
                                     variant="outlined"
                                     disabled={listIsLoading}
@@ -390,7 +387,7 @@ export const TurnoFormDialog: React.FC<TurnoFormDialogProps> = ({ open, onClose,
                                 </TextField>
                             )}
 
-                            {/* --- Observaciones --- */}
+
                             <TextField
                                 fullWidth label="Observaciones" name="observations"
                                 value={form.observations} onChange={handleOnChange}

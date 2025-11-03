@@ -12,8 +12,8 @@ import {
     Divider,
     Stack,
     CircularProgress,
-    ButtonBase, 
-    Dialog,     
+    ButtonBase,
+    Dialog,
     DialogTitle,
     DialogContent,
     DialogActions,
@@ -27,7 +27,7 @@ import AssessmentIcon from '@mui/icons-material/Assessment';
 // recharts para graficos
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-// Imports para datos reales
+//Datos del back
 import { useApi } from 'src/hooks/useApi';
 import { apiService } from 'src/services/api';
 import type { Appointment, Patient } from 'src/types';
@@ -37,7 +37,7 @@ import { PacienteFormDialog } from 'src/features/Pacientes/views/PacienteFormDia
 import { TurnoFormDialog } from 'src/features/Turnos/views/TurnoFormDialog';
 
 
-// Función de fecha 
+// Funcion para las fechas
 const getTodayString = () => {
     const today = new Date();
     const year = today.getFullYear();
@@ -47,7 +47,7 @@ const getTodayString = () => {
 };
 
 
-//  Componente Gráfico
+//Componente Gráfico
 interface ChartProps {
     data: { name: string; cantidad: number; fill: string }[];
 }
@@ -69,7 +69,7 @@ const AppointmentStatusBarChart: React.FC<ChartProps> = ({ data }) => (
 );
 
 
-//  Componente del Modal de Información 
+// Componente del Modal 
 const InfoDialog = ({ open, onClose, title, children }: {
     open: boolean,
     onClose: () => void,
@@ -95,6 +95,7 @@ const DashboardPage: React.FC = () => {
     const [openPacienteDialog, setOpenPacienteDialog] = useState(false);
     const [openTurnoDialog, setOpenTurnoDialog] = useState(false);
 
+
     // Estado para el nuevo modal de información
     const [modalInfo, setModalInfo] = useState<{
         open: boolean;
@@ -103,7 +104,7 @@ const DashboardPage: React.FC = () => {
     }>({ open: false, title: '', content: null });
 
 
-    // --- Carga de datos
+    // Carga de datos
     const {
         data: turnosData,
         loading: loadingTurnos,
@@ -119,32 +120,33 @@ const DashboardPage: React.FC = () => {
         apiService.getPatients
     );
 
-    // Filtramos los turnos que son para hoy
+    // Filtro de turnos para el dia actual
     const turnosHoy = useMemo(() => {
         if (!turnosData) return [];
         const todayStr = getTodayString();
         return turnosData.filter(t => (t.date === todayStr || t.date.startsWith(todayStr)));
     }, [turnosData]);
 
-    // Creamos la lista de turnos pendientes
+    // turnos pendientes
     const turnosPendientes = useMemo(() => {
         return turnosHoy.filter(
             t => t.state?.toUpperCase() === 'RESERVADO'
         );
     }, [turnosHoy]);
 
-    // Calculamos las estadísticas
+    // estadísticas
     const stats = useMemo(() => {
         const todayAppointments = turnosHoy.length;
         const totalPacientes = pacientesData?.length ?? 0;
-        const pendingConfirmations = turnosPendientes.length; 
+        const pendingConfirmations = turnosPendientes.length;
 
         return {
             todayAppointments,
             totalPacientes,
             pendingConfirmations,
         };
-    }, [turnosHoy, pacientesData, turnosPendientes]); 
+    }, [turnosHoy, pacientesData, turnosPendientes]);
+
     // Datos del gráfico
     const appointmentStatusData = useMemo(() => [
         { name: 'Reservados', cantidad: turnosHoy.filter(t => t.state === 'RESERVADO').length, fill: '#f1bd02ff' },
@@ -153,7 +155,6 @@ const DashboardPage: React.FC = () => {
     ], [turnosHoy]);
 
 
-    // handleSuccess 
     const handleSuccess = (message: string) => {
         console.log("Acción exitosa:", message);
         setOpenPacienteDialog(false);
@@ -206,7 +207,7 @@ const DashboardPage: React.FC = () => {
         </List>
     );
 
-    // Handlers para abrir el modal de información ---
+    // Handler para modal
 
     const handleOpenTurnosHoy = () => {
         setModalInfo({
@@ -233,7 +234,6 @@ const DashboardPage: React.FC = () => {
     };
 
 
-    // Estado de Carga (sin cambios)
     if (loadingTurnos || loadingPacientes) {
         return (
             <Box sx={{ p: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 'calc(100vh - 120px)' }}>
@@ -243,10 +243,9 @@ const DashboardPage: React.FC = () => {
         );
     }
 
-    // --- RENDER (Actualizado) ---
+    // Render
     return (
         <Box sx={{ p: 3, backgroundColor: '#f4f6f8', minHeight: 'calc(100vh - 64px)' }}>
-            {/* Encabezado (sin cambios) */}
             <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.dark' }}>
                 RESUMEN GENERAL 🏥
             </Typography>
@@ -254,11 +253,9 @@ const DashboardPage: React.FC = () => {
                 Vista rápida de la actividad de la clínica.
             </Typography>
 
-            {/* 💡 7. Sección de Estadísticas (Ahora Clicable) */}
             <Box
                 sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mb: 4 }}
             >
-                {/* Card 1: Turnos para Hoy */}
                 <ButtonBase
                     onClick={handleOpenTurnosHoy} // 💡
                     sx={{ borderRadius: 2, flexGrow: 1, minWidth: '250px', textAlign: 'left', '&:hover': { boxShadow: 6 } }}
@@ -271,7 +268,7 @@ const DashboardPage: React.FC = () => {
                     </Paper>
                 </ButtonBase>
 
-                {/* Card 2: Pacientes Totales */}
+
                 <ButtonBase
                     onClick={handleOpenPacientesTotales} // 💡
                     sx={{ borderRadius: 2, flexGrow: 1, minWidth: '250px', textAlign: 'left', '&:hover': { boxShadow: 6 } }}
@@ -284,7 +281,7 @@ const DashboardPage: React.FC = () => {
                     </Paper>
                 </ButtonBase>
 
-                {/* Card 3: Turnos Pendientes */}
+
                 <ButtonBase
                     onClick={handleOpenTurnosPendientes} // 💡
                     sx={{ borderRadius: 2, flexGrow: 1, minWidth: '250px', textAlign: 'left', '&:hover': { boxShadow: 6 } }}
@@ -298,11 +295,11 @@ const DashboardPage: React.FC = () => {
                 </ButtonBase>
             </Box>
 
-            {/* Sección Principal (Turnos y Acciones) - Sin cambios */}
+
             <Box
                 sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3 }}
             >
-                {/* Columna Izquierda: Lista de Próximos Turnos */}
+
                 <Box sx={{ flexGrow: 1, flexBasis: { xs: '100%', md: '70%' } }}>
                     <Paper elevation={3} sx={{ p: 2, borderRadius: 2, height: '91%' }}>
                         <Typography variant="h6" sx={{ mb: 1, px: 1 }}>Turnos de Hoy</Typography>
@@ -334,7 +331,7 @@ const DashboardPage: React.FC = () => {
                     </Paper>
                 </Box>
 
-                {/* Columna Derecha: Acciones Rápidas y Gráfico */}
+
                 <Box sx={{ flexGrow: 1, flexBasis: { xs: '100%', md: '70%' } }}>
                     <Stack spacing={3}>
 
@@ -346,7 +343,7 @@ const DashboardPage: React.FC = () => {
                 </Box>
             </Box>
 
-            {/* Modales */}
+            {/* Modal */}
             <PacienteFormDialog open={openPacienteDialog} onClose={() => setOpenPacienteDialog(false)} onSuccess={handleSuccess} />
             <TurnoFormDialog open={openTurnoDialog} onClose={() => setOpenTurnoDialog(false)} onSuccess={handleSuccess} turnos={[]} />
 

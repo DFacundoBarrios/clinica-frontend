@@ -9,23 +9,21 @@ import {
     Stack
 } from '@mui/material';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-// 💡 Ya no necesitamos PermContactCalendarIcon si la matrícula está en el título
-// import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar';
-import LocalHospitalIcon from '@mui/icons-material/LocalHospital'; // 💡 Usaremos este para la especialidad
+import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
+
+//Uso del back
 import { useApi } from 'src/hooks/useApi';
 import { apiService } from 'src/services/api';
 import type { Doctor } from 'src/types';
 
-// Función auxiliar para obtener el mensaje de error de forma segura
+// Función auxiliar para obtener el mensaje de error
 const getErrorMessage = (err: unknown): string => {
     if (!err) return 'Error desconocido.';
 
-    // Si el error es una cadena, la devolvemos.
     if (typeof err === 'string') {
         return err;
     }
 
-    // Si es un objeto, intentamos acceder a 'message' o proporcionamos un mensaje predeterminado.
     if (err && typeof err === 'object' && 'message' in err) {
         return err.message as string;
     }
@@ -33,7 +31,7 @@ const getErrorMessage = (err: unknown): string => {
     return 'Error al cargar los médicos.';
 };
 
-
+//hook
 export default function MedicosPage() {
     const { data: doctors, loading: isLoading, error } = useApi<Doctor[]>(
         apiService.getDoctors
@@ -42,20 +40,20 @@ export default function MedicosPage() {
     return (
         <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
-            <Box sx={{ 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center', 
-                    mb: 3,
-                    pb: 1,
-                    borderBottom: '1px solid #e0e0e0' 
-                }}>
+            <Box sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                mb: 3,
+                pb: 1,
+                borderBottom: '1px solid #e0e0e0'
+            }}>
                 <Typography variant="h4" component="h1" color="primary" sx={{ fontWeight: 'bold' }}>
-                                    NUESTROS PROFESIONALES 🩺
-                                </Typography>
+                    NUESTROS PROFESIONALES 🩺
+                </Typography>
             </Box>
 
-            {/* Estado de carga */}
+
             {isLoading && (
                 <Box sx={{ display: 'flex', justifyContent: 'center', p: 4, alignItems: 'center' }}>
                     <CircularProgress size={24} />
@@ -63,7 +61,7 @@ export default function MedicosPage() {
                 </Box>
             )}
 
-            {/* Error */}
+
             {error && (
                 <Alert severity="error" sx={{ mb: 3, width: '100%', maxWidth: 700 }}>
                     {getErrorMessage(error)}
@@ -78,10 +76,10 @@ export default function MedicosPage() {
                     </Alert>
                 ) : (
                     doctors?.map((doctor) => {
-                        
+
                         const especialidad = doctor.medical_specialty && doctor.medical_specialty.length > 0
                             ? doctor.medical_specialty[0].specialty_name
-                            : 'Sin especialidad'; // Texto alternativo
+                            : 'Sin especialidad';
 
                         return (
                             <Card
@@ -103,7 +101,7 @@ export default function MedicosPage() {
                                     >
                                         {doctor.name} {doctor.lastname}
                                     </Typography>
-                                    
+
                                     <Typography
                                         variant="subtitle1"
                                         component="div"
@@ -119,7 +117,7 @@ export default function MedicosPage() {
 
                                     <Stack spacing={1} sx={{ mt: 1 }}>
 
-                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>  
+                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                             <Typography variant="body1" color="text.secondary">
                                                 Matrícula: {doctor.enrollment}
                                             </Typography>

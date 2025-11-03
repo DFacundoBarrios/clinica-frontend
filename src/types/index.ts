@@ -26,9 +26,6 @@ export interface Doctor {
   start_time: string;
   end_time: string;
   medical_specialty?: MedicalSpecialty[];
-  // Ajustamos el tipo para el reporte de médicos.
-  // El backend devuelve los turnos, pero sin el objeto 'patient' completo.
-  // En su lugar, tenemos el ID del paciente.
   appointments?: (Omit<Appointment, 'patient'> & { patientIdPatient?: number })[];
   medical_office?: MedicalOffice;
 }
@@ -52,7 +49,7 @@ export interface Appointment {
   observations?: string;
   state?: AppointmentState;
   patient?: Patient;
-  patientIdPatient?: number; // Esta es la propiedad correcta que contiene el ID
+  patientIdPatient?: number; 
   doctor?: Doctor;
   medical_office?: MedicalOffice;
 }
@@ -77,7 +74,7 @@ export interface CreatePatient {
 
 
 // ============================================
-// TIPOS PARA ACTUALIZAR (Partial)
+// TIPOS PARA ACTUALIZAR 
 // ============================================
 
 export type UpdatePatient = Partial<CreatePatient>;
@@ -96,12 +93,10 @@ export interface UpdateAppointment {
 // TIPOS AUXILIARES
 // ============================================
 
-// Para mostrar doctor con nombre completo
 export interface DoctorDisplay extends Doctor {
   fullName: string;
 }
 
-// Para mostrar paciente con nombre completo
 export interface PatientDisplay extends Patient {
   fullName: string;
 }

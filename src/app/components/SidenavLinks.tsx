@@ -23,7 +23,7 @@ const SidenavLink = ({
     <ListItemButton
       component={NavLink}
       to={to}
-      end // Esta propiedad le dice a NavLink que solo se active con una coincidencia exacta de la URL.
+      end // le dice a NavLink que solo se active con una coincidencia exacta de la URL.
       onClick={onClick}
       sx={{ borderRadius: 1, mb: 0.5 }}
     >

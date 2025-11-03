@@ -21,7 +21,7 @@ import {
 } from '@mui/material';
 
 import { apiService } from 'src/services/api';
-import type {  AppointmentReport } from 'src/types';
+import type { AppointmentReport } from 'src/types';
 
 type AppointmentFilterType = 'week' | 'month' | 'year' | 'custom';
 
@@ -36,7 +36,7 @@ const ReportesPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [hasSearched, setHasSearched] = useState(false);
 
-    // Función para obtener los datos del backend
+    //obtener los datos del backend
     const fetchAppointmentsReport = useCallback(async () => {
         setLoading(true);
         setError(null);
@@ -53,10 +53,10 @@ const ReportesPage: React.FC = () => {
             }
 
             const finalDate = new Date(endDate);
-            
+
             finalDate.setDate(finalDate.getDate() + 1);
 
-            // La convertimos de nuevo a un string en formato YYYY-MM-DD.
+            // convertimosa un string en formato YYYY-MM-DD.
             const adjustedEndDate = finalDate.toISOString().split('T')[0];
 
             params.append('startDate', startDate);
@@ -82,16 +82,16 @@ const ReportesPage: React.FC = () => {
     };
 
     return (
-        <Box sx={{ 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center', 
-                    mb: 3,
-                    pb: 1,
-                    borderBottom: '1px solid #e0e0e0' 
+        <Box sx={{
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            mb: 3,
+            pb: 1,
+            borderBottom: '1px solid #e0e0e0'
         }}>
             <Typography variant="h4" component="h1" color="primary" sx={{ fontWeight: 'bold' }}>
-                    REPORTE DE HISTORIAL DE TURNOS 
-                </Typography>
+                REPORTE DE HISTORIAL DE TURNOS
+            </Typography>
 
             <Paper sx={{ p: 3, mb: 3 }}>
                 <Box component="form" onSubmit={handleGenerateReport} sx={{ display: 'flex', alignItems: 'flex-end', gap: 2, flexWrap: 'wrap' }}>
@@ -156,33 +156,33 @@ const ReportesPage: React.FC = () => {
             ) : (
                 <Paper elevation={3}>
                     <TableContainer>
-                    <Table sx={{ minWidth: 700 }} aria-label="tabla de pacientes">
-                        <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
-                            <TableRow>
-                                <TableCell>Fecha</TableCell>
-                                <TableCell>Hora</TableCell>
-                                <TableCell>Paciente</TableCell>
-                                <TableCell>Medico</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {hasSearched && appointments.length > 0 ? (
-                                appointments.map(app => (
-                                    <TableRow key={app.id_appointment}>
-                                        <TableCell>{new Date(app.date).toLocaleDateString()}</TableCell>
-                                        <TableCell>{app.hour}</TableCell>
-                                        <TableCell>{`${app.patient.name} ${app.patient.lastname}`}</TableCell>
-                                        <TableCell>{`${app.doctor.name} ${app.doctor.lastname}`}</TableCell>
-                                    </TableRow>
-                                ))
-                            ) : hasSearched ? (
-                                <TableRow><TableCell colSpan={4} align="center">No se encontraron turnos para el filtro seleccionado.</TableCell></TableRow>
-                            ) : (
-                                <TableRow><TableCell colSpan={4} align="center">Seleccione un filtro y genere un reporte para ver los resultados.</TableCell></TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                        <Table sx={{ minWidth: 700 }} aria-label="tabla de pacientes">
+                            <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
+                                <TableRow>
+                                    <TableCell>Fecha</TableCell>
+                                    <TableCell>Hora</TableCell>
+                                    <TableCell>Paciente</TableCell>
+                                    <TableCell>Medico</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {hasSearched && appointments.length > 0 ? (
+                                    appointments.map(app => (
+                                        <TableRow key={app.id_appointment}>
+                                            <TableCell>{new Date(app.date).toLocaleDateString()}</TableCell>
+                                            <TableCell>{app.hour}</TableCell>
+                                            <TableCell>{`${app.patient.name} ${app.patient.lastname}`}</TableCell>
+                                            <TableCell>{`${app.doctor.name} ${app.doctor.lastname}`}</TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : hasSearched ? (
+                                    <TableRow><TableCell colSpan={4} align="center">No se encontraron turnos para el filtro seleccionado.</TableCell></TableRow>
+                                ) : (
+                                    <TableRow><TableCell colSpan={4} align="center">Seleccione un filtro y genere un reporte para ver los resultados.</TableCell></TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
                 </Paper>
             )}
         </Box>

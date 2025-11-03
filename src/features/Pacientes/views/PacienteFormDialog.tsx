@@ -14,42 +14,42 @@ import {
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
 
-import { apiService } from 'src/services/api'; 
-import type { CreatePatient, Patient, UpdatePatient } from 'src/types'; 
+import { apiService } from 'src/services/api';
+import type { CreatePatient, Patient, UpdatePatient } from 'src/types';
 
 //datos para el formulario
-const estadoInicialForm: CreatePatient = { 
-    name: '', 
-    lastname: '', 
-    dni: '', 
-    phone: '', 
-    address: '' 
+const estadoInicialForm: CreatePatient = {
+    name: '',
+    lastname: '',
+    dni: '',
+    phone: '',
+    address: ''
 };
 
-// 2. Props que el componente recibirá
+// Props que el componente va a recibir
 export interface PacienteFormDialogProps {
     open: boolean;
     onClose: () => void;
-    pacienteInicial?: Patient | null; 
+    pacienteInicial?: Patient | null;
     onSuccess: (message: string) => void;
 }
 
 
 
 export const PacienteFormDialog: React.FC<PacienteFormDialogProps> = ({ open, onClose, pacienteInicial, onSuccess }) => {
-    
+
 
     const initialFormState = useMemo(() => {
         if (pacienteInicial) {
             const { name, lastname, dni, phone, address } = pacienteInicial;
-            return { name, lastname, dni, phone, address } as CreatePatient; 
+            return { name, lastname, dni, phone, address } as CreatePatient;
         }
-        // Usa el objeto de estado inicial vacío para crear uno nuevo
-        return estadoInicialForm; 
+
+        return estadoInicialForm;
     }, [pacienteInicial]);
-    
+
     // Estados internos del formulario
-    const [form, setForm] = useState<CreatePatient>(initialFormState); 
+    const [form, setForm] = useState<CreatePatient>(initialFormState);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -57,18 +57,18 @@ export const PacienteFormDialog: React.FC<PacienteFormDialogProps> = ({ open, on
     useEffect(() => {
         setForm(initialFormState);
         setError(null);
-    }, [initialFormState, open]); 
+    }, [initialFormState, open]);
 
     const isEditing = !!pacienteInicial;
     const dialogTitle = isEditing ? "EDITAR PACIENTE EXISTENTE" : "AGENDAR NUEVO PACIENTE";
-    
+
     function handleOnChange(event: ChangeEvent<HTMLInputElement>) {
         const { name, value } = event.target;
         setForm(prevFormData => ({
             ...prevFormData,
             [name]: value
         }));
-        if (error) setError(null); // Limpiar error al escribir
+        if (error) setError(null);
     }
 
     async function handleOnSubmit(event: FormEvent) {
@@ -76,28 +76,26 @@ export const PacienteFormDialog: React.FC<PacienteFormDialogProps> = ({ open, on
         setError(null);
         setIsLoading(true);
 
-        // --- INICIO DE VALIDACIÓN ---
-        
-        // 1. Definir las expresiones regulares
-        // (Asumo 7 u 8 dígitos para DNI y 10-15 para teléfono)
+
+        // Expresiones regulares para validar el dni y el telefono
         const dniRegex = /^\d{7,8}$/;
         const phoneRegex = /^[\d\s\-+]{8,10}$/;
 
-        // 2. Validar campos requeridos
+        //Validar campos 
         if (!form.name || !form.lastname || !form.dni || !form.phone) {
             setError("Los campos Nombre, Apellido, DNI y Teléfono son obligatorios.");
-            setIsLoading(false); // Detener el "cargando"
-            return; // Salir de la función
+            setIsLoading(false);
+            return;
         }
 
-        // 3. Validar formato de DNI
+        //Validar formato dni
         if (!dniRegex.test(form.dni)) {
             setError("El DNI es inválido. Debe tener 7 u 8 dígitos numéricos.");
             setIsLoading(false);
             return;
         }
-        
-        // 4. Validar formato de Teléfono
+
+        //Validar formato de telefono
         if (!phoneRegex.test(form.phone)) {
             setError("El teléfono es inválido. Debe tener entre 10 y 15 caracteres.");
             setIsLoading(false);
@@ -106,14 +104,14 @@ export const PacienteFormDialog: React.FC<PacienteFormDialogProps> = ({ open, on
 
         try {
             if (isEditing) {
-                const id = pacienteInicial!.id_patient; 
+                const id = pacienteInicial!.id_patient;
                 await apiService.updatePatient(id, form as UpdatePatient);
                 onSuccess(`Paciente ${form.name} actualizado con éxito.`);
             } else {
                 await apiService.createPatient(form);
                 onSuccess(`Paciente ${form.name} creado con éxito.`);
             }
-            onClose(); 
+            onClose();
         } catch (e) {
             console.error(e);
             const errorMsg = (e as any).response?.data?.message || "Error al guardar el paciente. Inténtalo de nuevo.";
@@ -124,22 +122,22 @@ export const PacienteFormDialog: React.FC<PacienteFormDialogProps> = ({ open, on
     }
 
     return (
-        <Dialog 
-            open={open} 
+        <Dialog
+            open={open}
             onClose={onClose} // Permite cerrar el modal haciendo clic fuera
-            fullWidth 
+            fullWidth
             maxWidth="sm"
         >
             <DialogTitle sx={{ backgroundColor: 'primary.main', color: 'white' }}>
                 <Typography variant="h6">{dialogTitle}</Typography>
             </DialogTitle>
-            
-            {/* El <form> es necesario para el handleOnSubmit */}
+
+
             <form onSubmit={handleOnSubmit}>
-                
-                <DialogContent dividers sx={{ pt: 2 }}> {/* Añade padding top */}
+
+                <DialogContent dividers sx={{ pt: 2 }}>
                     {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-                    
+
                     <Stack spacing={2}>
                         <TextField fullWidth required label="Nombre" name="name" value={form.name} onChange={handleOnChange} variant="outlined" />
                         <TextField fullWidth required label="Apellido" name="lastname" value={form.lastname} onChange={handleOnChange} variant="outlined" />
@@ -148,8 +146,8 @@ export const PacienteFormDialog: React.FC<PacienteFormDialogProps> = ({ open, on
                         <TextField fullWidth required label="Dirección" name="address" value={form.address} onChange={handleOnChange} variant="outlined" multiline rows={2} />
                     </Stack>
                 </DialogContent>
-                
-                <DialogActions sx={{ p: 2 }}> {/* Añade padding */}
+
+                <DialogActions sx={{ p: 2 }}>
                     <Button onClick={onClose} startIcon={<CancelIcon />} variant="outlined" color="secondary" disabled={isLoading}>
                         Cancelar
                     </Button>
@@ -157,7 +155,7 @@ export const PacienteFormDialog: React.FC<PacienteFormDialogProps> = ({ open, on
                         {isLoading ? (isEditing ? 'Guardando...' : 'Creando...') : 'Guardar'}
                     </Button>
                 </DialogActions>
-                
+
             </form>
         </Dialog>
     );
